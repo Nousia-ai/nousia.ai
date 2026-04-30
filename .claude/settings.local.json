@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(python -c \"from PIL import Image; im=Image.open\\('assets/nousia-logo.png'\\); print\\(im.size\\)\")",
+      "Bash(powershell -Command 'Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\('\\\\''C:\\\\Users\\\\ISAAC\\\\Documents\\\\CLAUDE\\\\NousiaLP\\\\assets\\\\nousia-logo.png'\\\\''\\); Write-Output \"$\\($img.Width\\) $\\($img.Height\\)\"; $img.Dispose\\(\\)')",
+      "Bash(powershell -Command 'Add-Type -AssemblyName System.Drawing; $img = [System.Drawing.Image]::FromFile\\('\\\\''C:\\\\Users\\\\ISAAC\\\\Documents\\\\CLAUDE\\\\NousiaLP\\\\assets\\\\nousia-logo.png'\\\\''\\); Write-Output \"W=$\\($img.Width\\) H=$\\($img.Height\\) Ratio=$\\([math]::Round\\($img.Width/$img.Height,3\\)\\)\"; $img.Dispose\\(\\)')"
+    ]
+  }
+}

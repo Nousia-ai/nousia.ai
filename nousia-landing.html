@@ -1,0 +1,2473 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="NOUSIA — Agencia de IA y Automatización. Diseñamos, implementamos y operamos sistemas de inteligencia artificial aplicada para empresas e instituciones." />
+<title>NOUSIA — Motor de inteligencia estratégica</title>
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%23f566a4'/><circle cx='16' cy='16' r='5' fill='white'/></svg>" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════
+   TOKENS
+   ═══════════════════════════════════════════════════════════ */
+:root,
+:root[data-theme="dark"] {
+  --bg:           #0a0a0a;
+  --bg-1:         #0f0f0f;
+  --bg-2:         #141414;
+  --bg-3:         #1a1a1a;
+  --line:         rgba(255,255,255,0.06);
+  --line-2:       rgba(255,255,255,0.12);
+  --line-3:       rgba(255,255,255,0.22);
+  --text:         #f4f4ee;
+  --text-muted:   #8a8a82;
+  --text-dim:     #4a4a44;
+  --accent:       #f566a4;
+  --accent-hi:    #ff8bbf;
+  --accent-dim:   rgba(245,102,164,0.12);
+  --nav-bg:       rgba(10, 10, 10, 0.82);
+  --logo-filter:  invert(1);
+  --noise-blend:  overlay;
+  --noise-opacity: 0.04;
+
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body:    'General Sans', 'Inter', sans-serif;
+  --font-serif:   'Instrument Serif', Georgia, serif;
+  --font-mono:    'Space Mono', 'Fira Code', monospace;
+
+  --gutter:       clamp(1.25rem, 3vw, 3rem);
+  --content:      1440px;
+
+  --ease:         cubic-bezier(0.16, 1, 0.3, 1);
+  --t:            400ms var(--ease);
+}
+
+:root[data-theme="light"] {
+  --bg:           #f4f1e8;
+  --bg-1:         #ebe7d9;
+  --bg-2:         #e1dccb;
+  --bg-3:         #d6d0bc;
+  --line:         rgba(10,10,10,0.08);
+  --line-2:       rgba(10,10,10,0.16);
+  --line-3:       rgba(10,10,10,0.28);
+  --text:         #0a0a0a;
+  --text-muted:   #5a5a52;
+  --text-dim:     #9a9a90;
+  --accent:       #d63d82;
+  --accent-hi:    #f566a4;
+  --accent-dim:   rgba(214,61,130,0.12);
+  --nav-bg:       rgba(244, 241, 232, 0.82);
+  --logo-filter:  none;
+  --noise-blend:  multiply;
+  --noise-opacity: 0.05;
+}
+
+html, body, #navbar, .entry-btn, .entry-title, .entry-sub,
+.hero-line, .hero-topline, .hero-meta, .hero-statement,
+section, .marquee, .ticker, .footer, #site,
+.nav-links a, .nav-actions a, button, input, textarea {
+  transition: background-color 500ms var(--ease), color 500ms var(--ease), border-color 500ms var(--ease);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESET
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; scroll-behavior: auto; overflow-x: hidden; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  cursor: none;
+  overflow-x: hidden;
+}
+a, button, input, textarea, label, select { cursor: none; font: inherit; color: inherit; }
+button { background: none; border: none; }
+a { text-decoration: none; }
+ul, ol { list-style: none; }
+img, svg { display: block; max-width: 100%; }
+::selection { background: var(--accent); color: #000; }
+
+/* ═══════════════════════════════════════════════════════════
+   GLOBAL GRID OVERLAY (fixed vertical columns, editorial)
+   ═══════════════════════════════════════════════════════════ */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.grid-overlay span {
+  border-right: 1px solid var(--line);
+  height: 100%;
+}
+.grid-overlay span:first-child { border-left: 1px solid var(--line); }
+@media (max-width: 900px) {
+  .grid-overlay { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+/* Noise overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9990;
+  pointer-events: none;
+  opacity: var(--noise-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: var(--noise-blend);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TYPOGRAPHY UTILITIES
+   ═══════════════════════════════════════════════════════════ */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 4px var(--accent-dim);
+}
+.eyebrow--pink { color: var(--accent); }
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 0.88;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+}
+.serif-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+.text-accent { color: var(--accent); }
+
+.word-wrap { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.word      { display: inline-block; will-change: transform; }
+
+/* Shared container */
+.container {
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  position: relative;
+  z-index: 2;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CUSTOM CURSOR
+   ═══════════════════════════════════════════════════════════ */
+#cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 36px; height: 36px;
+  margin: -18px 0 0 -18px;
+  background: var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  mix-blend-mode: difference;
+  will-change: transform;
+  transform: translate3d(-100px, -100px, 0);
+}
+#cursor-dot {
+  position: fixed;
+  top: 0; left: 0;
+  width: 5px; height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  background: var(--text);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+  transform: translate3d(-100px, -100px, 0);
+}
+@media (hover: none), (pointer: coarse) {
+  #cursor, #cursor-dot { display: none; }
+  body, a, button, input, textarea, label, select { cursor: auto !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ENTRY GATE
+   ═══════════════════════════════════════════════════════════ */
+#entry-gate {
+  position: fixed; inset: 0; z-index: 1000;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  clip-path: inset(0 0 0% 0);
+  -webkit-clip-path: inset(0 0 0% 0);
+  will-change: clip-path;
+}
+.entry-grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.entry-header,
+.entry-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.75rem var(--gutter);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  position: relative;
+  z-index: 2;
+}
+.entry-header .col-left,
+.entry-footer-row .col-left {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+.entry-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 var(--gutter);
+  position: relative;
+  z-index: 2;
+}
+.entry-logo-mark {
+  width: min(96vw, 1700px);
+  max-width: 96vw;
+  margin-bottom: 2rem;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.entry-logo-mark svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.entry-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3.4vw, 3rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.entry-title .accent {
+  color: var(--accent);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 1.05em;
+}
+.entry-sub {
+  max-width: 44ch;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 3rem;
+}
+.entry-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding: 1.1rem 2.2rem;
+  background: transparent;
+  border: 1px solid var(--line-3);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  overflow: hidden;
+  transition: color var(--t), border-color var(--t);
+}
+.entry-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--accent);
+  transform: translateY(100%);
+  transition: transform 500ms var(--ease);
+  z-index: -1;
+}
+.entry-btn:hover { color: #000; border-color: var(--accent); }
+.entry-btn:hover::before { transform: translateY(0); }
+.entry-btn svg { width: 14px; height: 14px; }
+.entry-btn .dot {
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  transition: background var(--t);
+}
+.entry-btn:hover .dot { background: #000; }
+
+/* ═══════════════════════════════════════════════════════════
+   NAVBAR
+   ═══════════════════════════════════════════════════════════ */
+#navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1.25rem var(--gutter);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 2rem;
+  transition: padding var(--t), background var(--t), backdrop-filter var(--t), border-color var(--t);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+}
+#navbar.scrolled {
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border-bottom-color: var(--line);
+  padding: 0.9rem var(--gutter);
+}
+.nav-logo { display: flex; align-items: center; justify-self: start; }
+.logo-svg { width: 115px; height: auto; display: block; }
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  justify-self: center;
+}
+.nav-links a {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  position: relative;
+  padding: 6px 0;
+  transition: color var(--t);
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 0; height: 1px;
+  background: var(--accent);
+  transition: width var(--t);
+}
+.nav-links a:hover { color: var(--accent); }
+.nav-links a:hover::after { width: 100%; }
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-self: end;
+}
+#audioToggle,
+#themeToggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--line-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: border-color var(--t), color var(--t);
+}
+#audioToggle:hover,
+#themeToggle:hover { border-color: var(--accent); color: var(--accent); }
+#themeToggle svg { width: 14px; height: 14px; display: block; }
+#themeToggle .icon-sun { display: none; }
+:root[data-theme="light"] #themeToggle .icon-moon { display: none; }
+:root[data-theme="light"] #themeToggle .icon-sun { display: block; }
+#audioToggle .bars {
+  display: inline-flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 12px;
+}
+#audioToggle .bars span {
+  width: 2px;
+  background: currentColor;
+  display: block;
+}
+#audioToggle .bars span:nth-child(1) { height: 40%; animation: bar 1.1s ease-in-out infinite; }
+#audioToggle .bars span:nth-child(2) { height: 85%; animation: bar 0.9s ease-in-out infinite 0.15s; }
+#audioToggle .bars span:nth-child(3) { height: 55%; animation: bar 1.3s ease-in-out infinite 0.3s; }
+#audioToggle.muted .bars span { animation: none !important; height: 40% !important; }
+@keyframes bar {
+  0%, 100% { height: 30%; }
+  50% { height: 90%; }
+}
+.btn-nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: var(--accent);
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: background var(--t), transform var(--t);
+}
+.btn-nav-cta:hover { background: var(--accent-hi); transform: translateY(-1px); }
+.btn-nav-cta svg { width: 12px; height: 12px; }
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION NUMBER / META (floating on side)
+   ═══════════════════════════════════════════════════════════ */
+.section-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 3rem;
+}
+.section-meta .num {
+  color: var(--accent);
+  font-weight: 700;
+}
+.section-meta .bar {
+  flex: 0 0 60px;
+  height: 1px;
+  background: var(--line-2);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════════════════ */
+#hero {
+  min-height: 100vh;
+  padding: 140px var(--gutter) 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+.hero-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  max-width: var(--content);
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.hero-topline .left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.hero-topline .right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.hero-topline strong {
+  color: var(--text);
+  font-weight: 400;
+}
+.hero-body {
+  max-width: var(--content);
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+.hero-headline {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 11vw, 12rem);
+  line-height: 0.82;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+.hero-line {
+  display: block;
+  overflow: hidden;
+}
+.hero-line--offset { padding-left: 0; }
+.hero-line--offset-right { text-align: right; }
+.hero-line .accent-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent);
+  font-size: 0.95em;
+  letter-spacing: -0.01em;
+}
+.hero-foot {
+  max-width: var(--content);
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 0.9fr;
+  gap: 3rem;
+  align-items: flex-end;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+  position: relative;
+  z-index: 2;
+}
+.hero-sub {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 42ch;
+}
+.hero-sub strong {
+  color: var(--text);
+  font-weight: 500;
+}
+.hero-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.hero-stats .stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+.hero-stats .stat strong {
+  font-family: var(--font-display);
+  font-size: 32px;
+  color: var(--text);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 1.1rem 2rem;
+  background: var(--accent);
+  color: #000;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  justify-self: end;
+  transition: background var(--t), transform var(--t);
+}
+.hero-cta:hover { background: var(--accent-hi); transform: translateY(-2px); }
+.hero-cta svg { width: 14px; height: 14px; }
+.hero-cta .dot {
+  width: 6px; height: 6px;
+  background: #000;
+  border-radius: 50%;
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  z-index: 3;
+}
+.scroll-indicator .bar {
+  width: 60px; height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  position: relative;
+  overflow: hidden;
+}
+.scroll-indicator .bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  animation: scrollLine 2.2s ease-in-out infinite;
+}
+@keyframes scrollLine {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MARQUEE TICKER
+   ═══════════════════════════════════════════════════════════ */
+.marquee {
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 1.5rem 0;
+  position: relative;
+  z-index: 2;
+  background: var(--bg);
+}
+.marquee-track {
+  display: flex;
+  gap: 4rem;
+  white-space: nowrap;
+  will-change: transform;
+  width: max-content;
+}
+.marquee-item {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4rem;
+  color: var(--text);
+}
+.marquee-item .serif-italic {
+  color: var(--accent);
+  font-size: 0.9em;
+}
+.marquee-dot {
+  display: inline-block;
+  width: 14px; height: 14px;
+  background: var(--accent);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HOOK
+   ═══════════════════════════════════════════════════════════ */
+#hook {
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  padding: 10rem var(--gutter);
+  position: relative;
+  overflow: hidden;
+}
+.hook-inner {
+  max-width: var(--content);
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: 4rem;
+  align-items: start;
+  position: relative;
+  z-index: 2;
+}
+.hook-meta { padding-top: 20px; }
+.hook-phrase {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5.2vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+.hook-phrase .accent-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 400;
+  font-size: 1.02em;
+}
+.hook-connector {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 4rem;
+  width: 0;
+  overflow: hidden;
+}
+.connector-line { flex: 1; height: 1px; background: var(--line-2); min-width: 40px; }
+.connector-node {
+  width: 10px; height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px var(--accent-dim);
+  flex-shrink: 0;
+  margin: 0 10px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   POSITIONING
+   ═══════════════════════════════════════════════════════════ */
+#positioning {
+  padding: 8rem var(--gutter);
+  border-top: 1px solid var(--line);
+}
+.pos-inner {
+  max-width: var(--content);
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+.pos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.pos-value {
+  padding: 3rem 3rem 3rem 0;
+  border-right: 1px solid var(--line);
+  position: relative;
+}
+.pos-value:last-child {
+  border-right: none;
+  padding: 3rem 0 3rem 3rem;
+}
+.pos-num-big {
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 14vw, 14rem);
+  line-height: 0.85;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--line-3);
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+  display: block;
+}
+.pos-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.75rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+  overflow: hidden;
+}
+.pos-title .serif-italic {
+  color: var(--accent);
+  font-size: 0.98em;
+}
+.pos-desc {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 42ch;
+  margin-bottom: 1.5rem;
+}
+.pos-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pos-tag {
+  padding: 6px 12px;
+  border: 1px solid var(--line-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MODEL
+   ═══════════════════════════════════════════════════════════ */
+#model {
+  padding: 10rem var(--gutter);
+  border-top: 1px solid var(--line);
+  position: relative;
+}
+.model-inner {
+  max-width: var(--content);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 6rem;
+  align-items: start;
+  position: relative;
+  z-index: 2;
+}
+.model-left { position: sticky; top: 120px; }
+.model-headline {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 7.5rem);
+  line-height: 0.88;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+.model-headline .serif-italic {
+  color: var(--accent);
+  font-size: 1.02em;
+}
+.model-body p {
+  font-size: 17px;
+  color: var(--text);
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+}
+.model-body p.dim {
+  color: var(--text-muted);
+  font-size: 15px;
+}
+.model-body p.aside {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 20px;
+  color: var(--accent);
+  line-height: 1.5;
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--accent);
+  margin: 2rem 0;
+}
+.model-body .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 1.5rem;
+  padding: 14px 28px;
+  border: 1px solid var(--line-3);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: background var(--t), color var(--t), border-color var(--t);
+}
+.model-body .btn-secondary:hover {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+.model-body .btn-secondary svg { width: 14px; height: 14px; }
+
+/* ═══════════════════════════════════════════════════════════
+   SERVICES
+   ═══════════════════════════════════════════════════════════ */
+#services {
+  padding: 8rem 0 4rem;
+  border-top: 1px solid var(--line);
+  position: relative;
+}
+.services-header {
+  padding: 0 var(--gutter);
+  max-width: var(--content);
+  margin: 0 auto 5rem;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 4rem;
+  align-items: end;
+}
+.services-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 8rem);
+  line-height: 0.88;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  font-weight: 400;
+  overflow: hidden;
+}
+.services-title .serif-italic {
+  color: var(--accent);
+  font-size: 1.02em;
+}
+.services-header p {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 50ch;
+}
+.services-list {
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+.service-item {
+  display: grid;
+  grid-template-columns: 80px 1fr 2fr 1fr 40px;
+  gap: 2rem;
+  align-items: center;
+  padding: 2.25rem 0;
+  border-top: 1px solid var(--line);
+  transition: padding var(--t);
+  position: relative;
+  cursor: none;
+}
+.service-item:last-child { border-bottom: 1px solid var(--line); }
+.service-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--bg-1);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 500ms var(--ease);
+  z-index: -1;
+}
+.service-item:hover::before { transform: scaleY(1); }
+.service-item:hover { padding: 2.25rem 2rem; }
+.service-item:hover .svc-arrow {
+  color: var(--accent);
+  transform: translateX(8px) rotate(-45deg);
+}
+.service-item:hover .svc-name { color: var(--accent); }
+.svc-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+.svc-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 3rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  transition: color var(--t);
+}
+.svc-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 50ch;
+}
+.svc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.svc-tag {
+  padding: 4px 10px;
+  border: 1px solid var(--line-2);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.svc-arrow {
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--text-muted);
+  transition: color var(--t), transform var(--t);
+  display: inline-block;
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .service-item {
+    grid-template-columns: 50px 1fr 30px;
+    gap: 1rem;
+  }
+  .svc-desc, .svc-tags { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TESTIMONIALS
+   ═══════════════════════════════════════════════════════════ */
+#testimonials {
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  padding-top: 6rem;
+  position: relative;
+}
+.testimonials-header {
+  padding: 0 var(--gutter) 5rem;
+  max-width: var(--content);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: end;
+}
+.testimonials-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 8rem);
+  line-height: 0.88;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  font-weight: 400;
+  overflow: hidden;
+}
+.testimonials-title .serif-italic {
+  color: var(--accent);
+  font-size: 1.02em;
+}
+.testimonials-counter {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+.testimonials-counter .big {
+  font-family: var(--font-display);
+  font-size: 60px;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.testimonials-counter .big span { color: var(--accent); }
+.testimonials-pin-wrapper { overflow: hidden; }
+.testimonials-track {
+  display: flex;
+  width: 300vw;
+  will-change: transform;
+}
+.testimonial-card {
+  width: 100vw;
+  padding: 6rem var(--gutter);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4rem;
+  align-items: start;
+  border-right: 1px solid var(--line);
+  flex-shrink: 0;
+  min-height: 70vh;
+}
+.testimonial-mark {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(8rem, 20vw, 18rem);
+  line-height: 0.7;
+  color: var(--accent);
+  opacity: 0.7;
+}
+.testimonial-body {
+  max-width: 60ch;
+}
+.testimonial-quote {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.8vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  margin-bottom: 3rem;
+  font-weight: 400;
+}
+.testimonial-cite {
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+}
+.testimonial-cite strong {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+.testimonial-cite .role {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.testimonial-cite .company {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+@media (max-width: 900px) {
+  .testimonial-card {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 4rem var(--gutter);
+  }
+  .testimonials-header { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CONTACT
+   ═══════════════════════════════════════════════════════════ */
+#contact {
+  padding: 10rem var(--gutter) 0;
+  border-top: 1px solid var(--line);
+  position: relative;
+}
+.contact-hero {
+  max-width: var(--content);
+  margin: 0 auto 6rem;
+}
+.contact-headline {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 11vw, 13rem);
+  line-height: 0.84;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  font-weight: 400;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.contact-headline .serif-italic {
+  color: var(--accent);
+  font-size: 1.02em;
+}
+.contact-sub {
+  max-width: 50ch;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin-top: 2rem;
+}
+.industries-row {
+  max-width: var(--content);
+  margin: 0 auto 5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.industry-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.industry-item::before {
+  content: '';
+  width: 5px; height: 5px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: inline-block;
+}
+.contact-grid {
+  max-width: var(--content);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 4rem;
+  padding-bottom: 6rem;
+}
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+.contact-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.contact-info-block .label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.contact-info-block .value {
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1.1;
+  color: var(--text);
+  text-transform: uppercase;
+  font-weight: 400;
+}
+.contact-info-block .value a:hover { color: var(--accent); }
+.contact-form {
+  display: grid;
+  gap: 1.5rem;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+.form-group label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line-2);
+  color: var(--text);
+  font-size: 16px;
+  padding: 14px 0;
+  transition: border-color var(--t);
+  font-family: var(--font-body);
+}
+.form-group textarea { resize: vertical; min-height: 100px; }
+.form-group input::placeholder,
+.form-group textarea::placeholder { color: var(--text-dim); }
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+.form-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 1rem;
+}
+.form-check input[type="checkbox"] {
+  width: 16px; height: 16px;
+  accent-color: var(--accent);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.form-check label {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.form-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 1.2rem 2.4rem;
+  background: var(--accent);
+  color: #000;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  justify-self: start;
+  margin-top: 1rem;
+  transition: background var(--t), transform var(--t);
+}
+.form-submit:hover { background: var(--accent-hi); transform: translateY(-2px); }
+.form-submit svg { width: 14px; height: 14px; }
+
+/* ═══════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════ */
+.site-footer {
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: 6rem 0 2.5rem;
+  border-top: 1px solid var(--line);
+  position: relative;
+}
+.footer-big {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 14vw, 16rem);
+  line-height: 0.8;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  margin-bottom: 4rem;
+  color: var(--text);
+  opacity: 0.08;
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.footer-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 2rem;
+  padding-bottom: 3rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--line);
+}
+.footer-col h4 {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.25rem;
+  font-weight: 400;
+}
+.footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+.footer-col li a {
+  font-size: 14px;
+  color: var(--text);
+  transition: color var(--t), padding var(--t);
+  display: inline-block;
+}
+.footer-col li a:hover { color: var(--accent); padding-left: 6px; }
+.footer-col .brand-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-top: 1rem;
+  max-width: 28ch;
+}
+.footer-social-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 1rem;
+}
+.footer-social-row a {
+  width: 36px; height: 36px;
+  border: 1px solid var(--line-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--t), color var(--t), background var(--t);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.footer-social-row a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SITE INITIAL STATE
+   ═══════════════════════════════════════════════════════════ */
+#site { visibility: hidden; }
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .hero-foot { grid-template-columns: 1fr; gap: 2rem; }
+  .hero-cta { justify-self: start; }
+  .model-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .model-left { position: static; }
+  .services-header { grid-template-columns: 1fr; gap: 2rem; }
+  .contact-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  #navbar { grid-template-columns: 1fr auto; }
+  .pos-grid { grid-template-columns: 1fr; }
+  .pos-value, .pos-value:last-child {
+    padding: 3rem 0;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .pos-value:last-child { border-bottom: none; }
+  .hook-inner { grid-template-columns: 1fr; gap: 2rem; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .hero-topline { flex-direction: column; gap: 1rem; align-items: flex-start; }
+  .hero-topline .right { text-align: left; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Noise + grid overlays -->
+<div class="grid-overlay" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+
+<!-- ═══════════════════════════════════════════════
+     ENTRY GATE
+     ═══════════════════════════════════════════════ -->
+<div id="entry-gate">
+  <div class="entry-grid-bg" aria-hidden="true"></div>
+
+  <div class="entry-header">
+    <div class="col-left">
+      <span>[NOUSIA] — Intelligence Engine</span>
+    </div>
+    <div class="col-right">
+      <span id="gate-time">00:00:00 CDMX</span>
+    </div>
+  </div>
+
+  <div class="entry-center">
+    <div class="entry-logo-mark" aria-label="NOUSIA">
+      <svg viewBox="0 0 776 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NOUSIA" preserveAspectRatio="xMidYMid meet">
+        <title>NOUSIA</title>
+        <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" style="filter: var(--logo-filter);" />
+      </svg>
+    </div>
+    <h2 class="entry-title" data-split>Activar <em class="accent">inteligencia</em></h2>
+    <p class="entry-sub">Motor de IA aplicada para decisiones, eficiencia y ventaja estratégica. Click para iniciar.</p>
+    <button class="entry-btn" id="entryBtn" type="button">
+      <span class="dot"></span>
+      <span>Iniciar experiencia</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </div>
+
+  <div class="entry-footer-row">
+    <div class="col-left">
+      <span>NOUSIA © 2026</span>
+      <span>19.4326° N / 99.1332° W</span>
+    </div>
+    <div class="col-right">
+      <span>V. 2.0 / ES</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     NAVBAR
+     ═══════════════════════════════════════════════ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo" aria-label="NOUSIA — Inicio">
+    <svg class="logo-svg" viewBox="0 0 776 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NOUSIA" preserveAspectRatio="xMidYMid meet">
+      <title>NOUSIA</title>
+      <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" style="filter: var(--logo-filter);" />
+    </svg>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Servicios</a></li>
+    <li><a href="#model">Modelo</a></li>
+    <li><a href="#testimonials">Clientes</a></li>
+    <li><a href="#contact">Contacto</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button id="themeToggle" type="button" aria-label="Toggle theme" title="Cambiar tema">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <span class="label">Tema</span>
+    </button>
+    <button id="audioToggle" class="muted" type="button" aria-label="Toggle audio">
+      <span class="bars"><span></span><span></span><span></span></span>
+      <span class="label">Sound off</span>
+    </button>
+    <a href="#contact" class="btn-nav-cta">
+      <span>Agenda llamada</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
+     SITE
+     ═══════════════════════════════════════════════ -->
+<main id="site">
+
+  <!-- ─── HERO ─── -->
+  <section id="hero">
+    <div class="hero-topline">
+      <div class="left">
+        <span>[00] — Agencia de IA y automatización</span>
+        <span><strong>CDMX, MX</strong> — 19.4326° N / 99.1332° W</span>
+      </div>
+      <div class="right">
+        <span>Intelligence Engine v2.0</span>
+        <span id="hero-time">00:00:00 — Abril 2026</span>
+      </div>
+    </div>
+
+    <div class="hero-body">
+      <h1 class="hero-headline" aria-label="Inteligencia estratégica. Desempeño mejorado. Resultados NOUSIA.">
+        <span class="hero-line" data-split>Inteligencia</span>
+        <span class="hero-line" data-split><em class="accent-italic">estratégica.</em></span>
+        <span class="hero-line" data-split>Desempeño mejorado.</span>
+      </h1>
+    </div>
+
+    <div class="hero-foot">
+      <p class="hero-sub">
+        <strong>NOUSIA</strong> desarrolla e implementa IA de alto desempeño para convertir
+        datos, procesos y conocimiento en capacidad real
+        de decisión y ejecución institucional.
+      </p>
+      <div class="hero-stats">
+        <div class="stat"><span>Proyectos</span><strong>38+</strong></div>
+        <div class="stat"><span>Industrias</span><strong>07</strong></div>
+        <div class="stat"><span>CDMX — MX</span><strong>2026</strong></div>
+      </div>
+      <a href="#contact" class="hero-cta">
+        <span class="dot"></span>
+        <span>Habla con nosotros</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+
+    <div class="scroll-indicator" aria-hidden="true">
+      <span class="bar"></span>
+      <span>Scroll — activar motor</span>
+    </div>
+  </section>
+
+  <!-- ─── MARQUEE TICKER ─── -->
+  <div class="marquee">
+    <div class="marquee-track" id="marqueeTrack">
+      <!-- JS duplica el contenido para loop infinito -->
+    </div>
+  </div>
+
+  <!-- ─── HOOK ─── -->
+  <section id="hook">
+    <div class="hook-inner">
+      <div class="hook-meta">
+        <div class="section-meta">
+          <span class="num">[01]</span>
+          <span class="bar"></span>
+          <span>Sistema</span>
+        </div>
+      </div>
+      <div>
+        <h2 class="hook-phrase" data-split>Conecta tu organización al <em class="accent-italic">motor de inteligencia</em> que impulsa decisiones, eficiencia y ventaja estratégica.</h2>
+        <div class="hook-connector" aria-hidden="true">
+          <div class="connector-line"></div>
+          <div class="connector-node"></div>
+          <div class="connector-line"></div>
+          <div class="connector-node"></div>
+          <div class="connector-line"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── POSITIONING ─── -->
+  <section id="positioning">
+    <div class="pos-inner">
+      <div class="section-meta">
+        <span class="num">[02]</span>
+        <span class="bar"></span>
+        <span>Posicionamiento</span>
+      </div>
+      <div class="pos-grid">
+        <div class="pos-value">
+          <span class="pos-num-big">01</span>
+          <h3 class="pos-title" data-split>Inteligencia<br><em class="serif-italic">aplicada.</em></h3>
+          <p class="pos-desc">Convertimos datos, procesos y conocimiento en capacidades reales de decisión y ejecución. IA que trabaja en tu operación — no en diapositivas.</p>
+          <div class="pos-tags">
+            <span class="pos-tag">ML Ops</span>
+            <span class="pos-tag">LLM Fine-tuning</span>
+            <span class="pos-tag">RAG</span>
+          </div>
+        </div>
+        <div class="pos-value">
+          <span class="pos-num-big">02</span>
+          <h3 class="pos-title" data-split>Ventaja<br><em class="serif-italic">estratégica.</em></h3>
+          <p class="pos-desc">No vendemos software. Construimos capacidades organizacionales. El resultado es una operación más eficiente, precisa y preparada para competir a largo plazo.</p>
+          <div class="pos-tags">
+            <span class="pos-tag">Roadmap</span>
+            <span class="pos-tag">Change Mgmt</span>
+            <span class="pos-tag">Governance</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── MODEL ─── -->
+  <section id="model">
+    <div class="model-inner">
+      <div class="model-left">
+        <div class="section-meta">
+          <span class="num">[03]</span>
+          <span class="bar"></span>
+          <span>Modelo</span>
+        </div>
+        <h2 class="model-headline" data-split>Socio<br>estratégico.<br><em class="serif-italic">No proveedor.</em></h2>
+      </div>
+      <div class="model-body">
+        <p>Construimos capacidades de inteligencia artificial de largo plazo, no soluciones aisladas. Somos el socio estratégico que integra visión, desarrollo e implementación para convertir la IA en ventaja real y duradera.</p>
+        <p class="dim">Trabajamos como equipo extendido — no como proveedor externo. Cada engagement incluye arquitectura, entrega y operación continua con métricas auditables desde el día uno.</p>
+        <p class="aside">"Directos. Técnicos. Sin rodeos. Eso ayuda."</p>
+        <a href="#contact" class="btn-secondary">
+          <span>Habla con nosotros</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SERVICES ─── -->
+  <section id="services">
+    <div class="services-header">
+      <div>
+        <div class="section-meta">
+          <span class="num">[04]</span>
+          <span class="bar"></span>
+          <span>Servicios</span>
+        </div>
+        <h2 class="services-title" data-split>Lo que<br><em class="serif-italic">hacemos.</em></h2>
+      </div>
+      <p>Capacidades end-to-end para transformar procesos, decisiones y conocimiento en ventaja operativa. Cada engagement combina estrategia, ingeniería y operación.</p>
+    </div>
+
+    <ul class="services-list" role="list">
+      <li class="service-item">
+        <span class="svc-num">[01]</span>
+        <h3 class="svc-name">Estrategia de IA</h3>
+        <p class="svc-desc">Diagnóstico organizacional y hoja de ruta para adopción de IA con impacto medible en 90 días.</p>
+        <div class="svc-tags"><span class="svc-tag">Assessment</span><span class="svc-tag">Roadmap</span></div>
+        <span class="svc-arrow" aria-hidden="true">↗</span>
+      </li>
+      <li class="service-item">
+        <span class="svc-num">[02]</span>
+        <h3 class="svc-name">Automatización</h3>
+        <p class="svc-desc">Workflows autónomos e inteligentes que operan sin intervención manual constante y escalan con tu demanda.</p>
+        <div class="svc-tags"><span class="svc-tag">n8n</span><span class="svc-tag">Zapier</span><span class="svc-tag">Custom</span></div>
+        <span class="svc-arrow" aria-hidden="true">↗</span>
+      </li>
+      <li class="service-item">
+        <span class="svc-num">[03]</span>
+        <h3 class="svc-name">Inteligencia de datos</h3>
+        <p class="svc-desc">Modelos predictivos y analítica avanzada para transformar datos operativos en ventaja competitiva.</p>
+        <div class="svc-tags"><span class="svc-tag">ML</span><span class="svc-tag">Analytics</span></div>
+        <span class="svc-arrow" aria-hidden="true">↗</span>
+      </li>
+      <li class="service-item">
+        <span class="svc-num">[04]</span>
+        <h3 class="svc-name">Agentes a medida</h3>
+        <p class="svc-desc">Sistemas conversacionales y operativos entrenados con el conocimiento específico de tu organización.</p>
+        <div class="svc-tags"><span class="svc-tag">LLM</span><span class="svc-tag">RAG</span><span class="svc-tag">Agents</span></div>
+        <span class="svc-arrow" aria-hidden="true">↗</span>
+      </li>
+      <li class="service-item">
+        <span class="svc-num">[05]</span>
+        <h3 class="svc-name">Operación continua</h3>
+        <p class="svc-desc">Mantenimiento, monitoreo y evolución continua de los sistemas de IA desplegados en producción.</p>
+        <div class="svc-tags"><span class="svc-tag">MLOps</span><span class="svc-tag">Observability</span></div>
+        <span class="svc-arrow" aria-hidden="true">↗</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ─── TESTIMONIALS ─── -->
+  <section id="testimonials">
+    <div class="testimonials-header">
+      <div>
+        <div class="section-meta">
+          <span class="num">[05]</span>
+          <span class="bar"></span>
+          <span>Clientes</span>
+        </div>
+        <h2 class="testimonials-title" data-split>Lo que<br><em class="serif-italic">dicen.</em></h2>
+      </div>
+      <div class="testimonials-counter">
+        <span class="big"><span id="testCurrent">01</span>/03</span>
+        <span>Scroll horizontal</span>
+      </div>
+    </div>
+
+    <div class="testimonials-pin-wrapper">
+      <div class="testimonials-track" id="testimonialsTrack">
+        <article class="testimonial-card">
+          <div class="testimonial-mark">"</div>
+          <div class="testimonial-body">
+            <div class="testimonial-quote">
+              Nousia transformó la manera en que tomamos decisiones. Los modelos predictivos nos dieron visibilidad que nunca habíamos tenido en 15 años de operación.
+            </div>
+            <cite class="testimonial-cite">
+              <strong>María González</strong>
+              <span class="role">Directora de Operaciones</span>
+              <span class="company">Manufactura MX</span>
+            </cite>
+          </div>
+        </article>
+        <article class="testimonial-card">
+          <div class="testimonial-mark">"</div>
+          <div class="testimonial-body">
+            <div class="testimonial-quote">
+              En 90 días pasamos de procesar solicitudes manualmente a tener un sistema autónomo que maneja el 80% del volumen. El ROI fue inmediato.
+            </div>
+            <cite class="testimonial-cite">
+              <strong>Carlos Ruiz</strong>
+              <span class="role">Director de Innovación</span>
+              <span class="company">Institución Pública CDMX</span>
+            </cite>
+          </div>
+        </article>
+        <article class="testimonial-card">
+          <div class="testimonial-mark">"</div>
+          <div class="testimonial-body">
+            <div class="testimonial-quote">
+              No es un proveedor. Es el equipo de IA que necesitábamos sin el costo de construirlo internamente. Estratégicos, directos y entregaron lo prometido.
+            </div>
+            <cite class="testimonial-cite">
+              <strong>Ana López</strong>
+              <span class="role">CEO</span>
+              <span class="company">Startup Fintech MX</span>
+            </cite>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CONTACT ─── -->
+  <section id="contact">
+    <div class="contact-hero">
+      <div class="section-meta">
+        <span class="num">[06]</span>
+        <span class="bar"></span>
+        <span>Siguiente paso</span>
+      </div>
+      <h2 class="contact-headline" data-split>Construye<br>el <em class="serif-italic">siguiente</em><br>paso.</h2>
+      <p class="contact-sub">Cuéntanos tu desafío. Respondemos en menos de 24 hrs con un diagnóstico inicial y una propuesta concreta — sin relleno.</p>
+    </div>
+
+    <div class="industries-row" aria-label="Industrias">
+      <span class="industry-item">Gobierno &amp; Sector Público</span>
+      <span class="industry-item">Empresas Medianas</span>
+      <span class="industry-item">Corporativos</span>
+      <span class="industry-item">Fintech</span>
+      <span class="industry-item">Manufactura</span>
+      <span class="industry-item">Retail</span>
+    </div>
+
+    <div class="contact-grid">
+      <aside class="contact-info">
+        <div class="contact-info-block">
+          <span class="label">Email directo</span>
+          <span class="value"><a href="mailto:descubre@nousia.ai">descubre@nousia.ai</a></span>
+        </div>
+        <div class="contact-info-block">
+          <span class="label">Oficina</span>
+          <span class="value">CDMX,<br>México.</span>
+        </div>
+        <div class="contact-info-block">
+          <span class="label">Horario</span>
+          <span class="value">Lun — Vie<br>09:00 / 18:00</span>
+        </div>
+      </aside>
+
+      <form class="contact-form" id="contactForm" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cf-name">[01] Nombre</label>
+            <input type="text" id="cf-name" name="nombre" placeholder="Tu nombre completo" required />
+          </div>
+          <div class="form-group">
+            <label for="cf-company">[02] Empresa</label>
+            <input type="text" id="cf-company" name="empresa" placeholder="Tu organización" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cf-email">[03] Email corporativo</label>
+            <input type="email" id="cf-email" name="email" placeholder="tu@empresa.com" required />
+          </div>
+          <div class="form-group">
+            <label for="cf-budget">[04] Presupuesto estimado</label>
+            <select id="cf-budget" name="budget">
+              <option value="">Selecciona una opción</option>
+              <option>Menos de $20k USD</option>
+              <option>$20k — $100k USD</option>
+              <option>$100k — $500k USD</option>
+              <option>Más de $500k USD</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cf-msg">[05] ¿En qué podemos ayudarte?</label>
+          <textarea id="cf-msg" name="mensaje" placeholder="Cuéntanos brevemente tu desafío o proyecto de IA..." rows="4" required></textarea>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="cf-privacy" name="privacidad" required />
+          <label for="cf-privacy">Acepto el tratamiento de mis datos conforme al aviso de privacidad.</label>
+        </div>
+        <button type="submit" class="form-submit">
+          <span>Enviar mensaje</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </form>
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-big" aria-hidden="true">NOUSIA — NOUSIA — NOUSIA</div>
+      <div class="footer-top">
+        <div class="footer-col">
+          <h4>[NOUSIA]</h4>
+          <svg class="logo-svg" style="width: 100px;" viewBox="0 0 776 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NOUSIA" preserveAspectRatio="xMidYMid meet">
+            <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" style="filter: var(--logo-filter); opacity: 0.9;" />
+          </svg>
+          <p class="brand-desc">Motor de inteligencia estratégica para organizaciones que buscan el siguiente nivel.</p>
+          <div class="footer-social-row">
+            <a href="#" aria-label="LinkedIn">LI</a>
+            <a href="#" aria-label="Instagram">IG</a>
+            <a href="#" aria-label="X / Twitter">X</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Servicios</h4>
+          <ul>
+            <li><a href="#services">Estrategia de IA</a></li>
+            <li><a href="#services">Automatización</a></li>
+            <li><a href="#services">Inteligencia de datos</a></li>
+            <li><a href="#services">Agentes a medida</a></li>
+            <li><a href="#services">Operación continua</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="#model">Modelo</a></li>
+            <li><a href="#testimonials">Clientes</a></li>
+            <li><a href="#contact">Contacto</a></li>
+            <li><a href="mailto:descubre@nousia.ai">descubre@nousia.ai</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacidad</a></li>
+            <li><a href="#">Términos</a></li>
+            <li><a href="#">Cookies</a></li>
+            <li><a href="#">Aviso legal</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 NOUSIA. Todos los derechos reservados.</span>
+        <span>CDMX, México — 19.4326° N / 99.1332° W</span>
+      </div>
+    </footer>
+  </section>
+
+</main>
+
+<!-- GSAP + ScrollTrigger + Lenis -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   NOUSIA v3 — Editorial Intelligence Engine
+   ═══════════════════════════════════════════════════════════ */
+gsap.registerPlugin(ScrollTrigger);
+gsap.defaults({ ease: 'power3.out', duration: 0.9 });
+gsap.config({ nullTargetWarn: false });
+
+/* ──── splitWords — preserves <br> and inline tags like <em>, <span> ──── */
+function splitWords(selector) {
+  document.querySelectorAll(selector).forEach(el => {
+    if (el.dataset.splitDone === 'true') return;
+    const html = el.innerHTML;
+    const lines = html.split(/<br\s*\/?>/i);
+    el.innerHTML = lines.map(line => {
+      const tokens = [];
+      const re = /<[a-z][^>]*>.*?<\/[a-z]+>|[^\s<]+/gi;
+      let m;
+      while ((m = re.exec(line)) !== null) tokens.push(m[0]);
+      return tokens
+        .map(t => `<span class="word-wrap"><span class="word">${t}</span></span>`)
+        .join(' ');
+    }).join('<br>');
+    el.dataset.splitDone = 'true';
+  });
+}
+
+/* ──── LENIS ──── */
+let lenis;
+function initLenis() {
+  if (typeof Lenis === 'undefined') {
+    console.warn('[NOUSIA] Lenis not loaded — falling back to native scroll.');
+    return;
+  }
+  try {
+    lenis = new Lenis({
+      duration: 1.4,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      smoothTouch: false,
+      touchMultiplier: 2
+    });
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+  } catch (err) {
+    console.warn('[NOUSIA] Lenis init failed:', err);
+    lenis = null;
+  }
+}
+
+/* ──── CURSOR ──── */
+function initCursor() {
+  const cursor = document.getElementById('cursor');
+  const dot = document.getElementById('cursor-dot');
+  if (!cursor || !dot) return;
+
+  // Touch device? Bail out and restore native cursor.
+  if (window.matchMedia('(hover: none), (pointer: coarse)').matches) {
+    cursor.style.display = 'none';
+    dot.style.display = 'none';
+    document.documentElement.style.cursor = 'auto';
+    document.body.style.cursor = 'auto';
+    return;
+  }
+
+  let mx = -100, my = -100;
+  let cx = -100, cy = -100;
+  let hasMoved = false;
+
+  const setCx = gsap.quickSetter(cursor, 'x', 'px');
+  const setCy = gsap.quickSetter(cursor, 'y', 'px');
+  const setDx = gsap.quickSetter(dot, 'x', 'px');
+  const setDy = gsap.quickSetter(dot, 'y', 'px');
+
+  // Initial offscreen until mouse moves
+  gsap.set(cursor, { x: -100, y: -100 });
+  gsap.set(dot,    { x: -100, y: -100 });
+
+  const onMove = (e) => {
+    mx = e.clientX; my = e.clientY;
+    if (!hasMoved) {
+      // Snap both on first move so nothing lags from offscreen
+      cx = mx; cy = my;
+      hasMoved = true;
+    }
+    setDx(mx); setDy(my);
+  };
+  window.addEventListener('mousemove', onMove, { passive: true });
+  window.addEventListener('pointermove', onMove, { passive: true });
+
+  gsap.ticker.add(() => {
+    cx += (mx - cx) * 0.22;
+    cy += (my - cy) * 0.22;
+    setCx(cx); setCy(cy);
+  });
+
+  const selector = 'a, button, input, textarea, select, label, .service-item, [role="button"]';
+  document.addEventListener('mouseover', (e) => {
+    if (e.target.closest && e.target.closest(selector)) {
+      gsap.to(cursor, { scale: 1.8, duration: 0.3, ease: 'power2.out' });
+      gsap.to(dot,    { scale: 0,    duration: 0.2 });
+    }
+  });
+  document.addEventListener('mouseout', (e) => {
+    if (e.target.closest && e.target.closest(selector)) {
+      gsap.to(cursor, { scale: 1, duration: 0.3, ease: 'power2.out' });
+      gsap.to(dot,    { scale: 1, duration: 0.2 });
+    }
+  });
+}
+
+/* ──── CLOCK ──── */
+function initClock() {
+  const update = () => {
+    const d = new Date();
+    const fmt = (n) => String(n).padStart(2, '0');
+    // CDMX = UTC-6
+    const utc = d.getTime() + d.getTimezoneOffset() * 60000;
+    const cdmx = new Date(utc - 6 * 60 * 60000);
+    const t = `${fmt(cdmx.getHours())}:${fmt(cdmx.getMinutes())}:${fmt(cdmx.getSeconds())}`;
+    const g = document.getElementById('gate-time');
+    const h = document.getElementById('hero-time');
+    if (g) g.textContent = `${t} CDMX`;
+    if (h) h.textContent = `${t} — Abril 2026`;
+  };
+  update();
+  setInterval(update, 1000);
+}
+
+/* ──── MARQUEE ──── */
+function initMarquee() {
+  const track = document.getElementById('marqueeTrack');
+  if (!track) return;
+  const items = [
+    'Intelligence Engine',
+    'Desempeño mejorado',
+    'Resultados Nousia',
+    'CDMX — 2026',
+    'Ventaja estratégica',
+    'IA aplicada'
+  ];
+  const build = () => items.map(t =>
+    `<span class="marquee-item">${t}<span class="marquee-dot"></span></span>`
+  ).join('');
+  track.innerHTML = build() + build() + build();
+
+  // seamless scroll
+  gsap.to(track, {
+    xPercent: -33.333,
+    duration: 30,
+    ease: 'none',
+    repeat: -1
+  });
+}
+
+/* ──── ENTRY GATE ──── */
+function initEntryGate() {
+  try {
+    splitWords('.entry-title[data-split]');
+  } catch (err) {
+    console.warn('[NOUSIA] splitWords failed on entry-title:', err);
+  }
+
+  const tl = gsap.timeline({ delay: 0.3 });
+  tl.from('.entry-grid-bg', { opacity: 0, duration: 1.4 }, 0)
+    .from('.entry-header > div, .entry-footer-row > div', {
+      opacity: 0, y: -6, duration: 0.6, stagger: 0.08
+    }, 0.1)
+    .from('.entry-logo-mark', { opacity: 0, y: 30, scale: 0.94, duration: 1.1, ease: 'power4.out' }, '-=0.2')
+    .from('.entry-title .word', {
+      yPercent: 110, opacity: 0, duration: 0.8, stagger: 0.06, ease: 'power4.out'
+    }, '-=0.4')
+    .from('.entry-sub', { opacity: 0, y: 14, duration: 0.6 }, '-=0.4')
+    .from('.entry-btn', { opacity: 0, y: 14, duration: 0.6 }, '-=0.3');
+
+  const dismissGate = () => {
+    const btn = document.getElementById('entryBtn');
+    if (!btn || btn.dataset.fired === '1') return;
+    btn.dataset.fired = '1';
+    btn.disabled = true;
+
+    // Hard fallback: if anything in the timeline throws, we still reveal the site.
+    const reveal = () => {
+      const gate = document.getElementById('entry-gate');
+      if (gate) gate.style.display = 'none';
+      const site = document.getElementById('site');
+      if (site) site.style.visibility = 'visible';
+      try { initSiteAnimations(); } catch (err) { console.error('[NOUSIA] site init failed:', err); }
+    };
+    const safety = setTimeout(reveal, 2200);
+
+    try {
+      const out = gsap.timeline({
+        onComplete: () => { clearTimeout(safety); reveal(); }
+      });
+      out.to('.entry-btn, .entry-sub, .entry-logo-mark, .entry-header > div, .entry-footer-row > div', {
+        opacity: 0, y: -8, duration: 0.3, stagger: 0.03, ease: 'power2.in'
+      })
+      .to('.entry-title .word', {
+        yPercent: -110, duration: 0.5, stagger: 0.03, ease: 'power3.in'
+      }, '-=0.2')
+      .to('#entry-gate', {
+        clipPath: 'inset(0 0 100% 0)',
+        webkitClipPath: 'inset(0 0 100% 0)',
+        duration: 0.9, ease: 'power4.inOut'
+      }, '-=0.15');
+    } catch (err) {
+      console.error('[NOUSIA] dismiss timeline failed:', err);
+      clearTimeout(safety);
+      reveal();
+    }
+  };
+
+  const entryBtn = document.getElementById('entryBtn');
+  if (entryBtn) {
+    entryBtn.addEventListener('click', dismissGate);
+    entryBtn.addEventListener('pointerdown', dismissGate);
+  }
+  // Also dismiss on Enter/Space or any scroll attempt
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') dismissGate();
+  });
+  window.addEventListener('wheel', dismissGate, { once: true, passive: true });
+}
+
+/* ──── NAVBAR ──── */
+function initNavbar() {
+  const navbar = document.getElementById('navbar');
+  const apply = (s) => navbar.classList.toggle('scrolled', s > 60);
+
+  if (lenis) lenis.on('scroll', ({ scroll }) => apply(scroll));
+  else window.addEventListener('scroll', () => apply(window.scrollY), { passive: true });
+
+  gsap.from('#navbar .nav-logo', { opacity: 0, x: -12, duration: 0.7, delay: 0.1 });
+  gsap.from('#navbar .nav-links li, #navbar .nav-actions > *', {
+    opacity: 0, y: -8, duration: 0.5, stagger: 0.06, delay: 0.2
+  });
+
+  // smooth scroll anchors
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const href = a.getAttribute('href');
+      if (!href || href === '#') return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      if (lenis) lenis.scrollTo(target, { offset: -80, duration: 1.4 });
+      else target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+}
+
+/* ──── HERO ──── */
+function initHero() {
+  splitWords('.hero-line[data-split]');
+
+  const tl = gsap.timeline({ delay: 0.2 });
+  tl.from('.hero-topline > div', {
+    opacity: 0, y: -10, duration: 0.6, stagger: 0.08
+  })
+  .from('.hero-line .word', {
+    yPercent: 115, duration: 1.1, stagger: { each: 0.045 }, ease: 'power4.out'
+  }, '-=0.3')
+  .from('.hero-foot', { opacity: 0, y: 20, duration: 0.7 }, '-=0.5')
+  .from('.hero-stats .stat', {
+    opacity: 0, x: -10, duration: 0.5, stagger: 0.1
+  }, '-=0.5')
+  .from('.hero-cta', { opacity: 0, y: 14, duration: 0.5 }, '-=0.4')
+  .from('.scroll-indicator', { opacity: 0, x: -10, duration: 0.4 }, '-=0.2');
+
+  // Parallax
+  gsap.to('.hero-body', {
+    yPercent: -20, ease: 'none',
+    scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.5 }
+  });
+  gsap.to('.hero-topline, .hero-foot', {
+    opacity: 0.1, ease: 'none',
+    scrollTrigger: { trigger: '#hero', start: '40% top', end: 'bottom top', scrub: true }
+  });
+}
+
+/* ──── HOOK ──── */
+function initHook() {
+  splitWords('.hook-phrase[data-split]');
+
+  ScrollTrigger.create({
+    trigger: '#hook', start: 'top 65%', once: true,
+    onEnter: () => {
+      const tl = gsap.timeline();
+      tl.from('#hook .section-meta', { opacity: 0, x: -20, duration: 0.6 })
+        .from('.hook-phrase .word', {
+          yPercent: 115, duration: 0.95, stagger: 0.03, ease: 'power4.out'
+        }, '-=0.3')
+        .to('.hook-connector', { width: '100%', duration: 1.2, ease: 'power3.inOut' }, '-=0.4');
+    }
+  });
+}
+
+/* ──── POSITIONING ──── */
+function initPositioning() {
+  splitWords('.pos-title[data-split]');
+
+  ScrollTrigger.create({
+    trigger: '#positioning', start: 'top 70%', once: true,
+    onEnter: () => {
+      const tl = gsap.timeline();
+      tl.from('#positioning .section-meta', { opacity: 0, x: -20, duration: 0.5 })
+        .from('.pos-value', {
+          opacity: 0, y: 40, duration: 0.9, stagger: 0.15
+        }, '-=0.2');
+    }
+  });
+
+  document.querySelectorAll('.pos-title').forEach(el => {
+    gsap.from(el.querySelectorAll('.word'), {
+      yPercent: 115, duration: 0.9, stagger: 0.06, ease: 'power4.out',
+      scrollTrigger: { trigger: el, start: 'top 80%', once: true }
+    });
+  });
+
+  gsap.from('.pos-num-big', {
+    opacity: 0, x: -20, duration: 1.0, stagger: 0.15,
+    scrollTrigger: { trigger: '#positioning', start: 'top 65%', once: true }
+  });
+}
+
+/* ──── MODEL ──── */
+function initModel() {
+  splitWords('.model-headline[data-split]');
+
+  const tl = gsap.timeline({
+    scrollTrigger: { trigger: '#model', start: 'top 65%', once: true }
+  });
+  tl.from('#model .section-meta', { opacity: 0, x: -20, duration: 0.5 })
+    .from('.model-headline .word', {
+      yPercent: 115, duration: 1.0, stagger: 0.06, ease: 'power4.out'
+    }, '-=0.2')
+    .from('.model-body p', {
+      opacity: 0, y: 16, duration: 0.6, stagger: 0.12
+    }, '-=0.4')
+    .from('.model-body .btn-secondary', {
+      opacity: 0, y: 12, duration: 0.5
+    }, '-=0.3');
+}
+
+/* ──── SERVICES ──── */
+function initServices() {
+  splitWords('.services-title[data-split]');
+
+  gsap.from('#services .section-meta', {
+    opacity: 0, x: -20, duration: 0.5,
+    scrollTrigger: { trigger: '.services-header', start: 'top 75%', once: true }
+  });
+
+  gsap.from('.services-title .word', {
+    yPercent: 115, duration: 1.0, stagger: 0.06, ease: 'power4.out',
+    scrollTrigger: { trigger: '.services-header', start: 'top 75%', once: true }
+  });
+
+  gsap.from('.services-header p', {
+    opacity: 0, y: 12, duration: 0.6, delay: 0.2,
+    scrollTrigger: { trigger: '.services-header', start: 'top 75%', once: true }
+  });
+
+  gsap.from('.service-item', {
+    x: -50, opacity: 0, duration: 0.8,
+    stagger: 0.1, ease: 'power3.out',
+    scrollTrigger: { trigger: '.services-list', start: 'top 80%', once: true }
+  });
+}
+
+/* ──── TESTIMONIALS ──── */
+function initTestimonials() {
+  splitWords('.testimonials-title[data-split]');
+
+  gsap.from('#testimonials .section-meta', {
+    opacity: 0, x: -20, duration: 0.5,
+    scrollTrigger: { trigger: '.testimonials-header', start: 'top 75%', once: true }
+  });
+  gsap.from('.testimonials-title .word', {
+    yPercent: 115, duration: 1.0, stagger: 0.06, ease: 'power4.out',
+    scrollTrigger: { trigger: '.testimonials-header', start: 'top 75%', once: true }
+  });
+  gsap.from('.testimonials-counter', {
+    opacity: 0, y: 10, duration: 0.6,
+    scrollTrigger: { trigger: '.testimonials-header', start: 'top 75%', once: true }
+  });
+
+  const mm = gsap.matchMedia();
+  mm.add('(min-width: 901px)', () => {
+    gsap.to('#testimonialsTrack', {
+      xPercent: -66.667, ease: 'none',
+      scrollTrigger: {
+        trigger: '#testimonials',
+        pin: true, pinSpacing: true,
+        start: 'top top', end: '+=200%',
+        scrub: 1, anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          const idx = Math.min(3, Math.round(self.progress * 2) + 1);
+          const el = document.getElementById('testCurrent');
+          if (el) el.textContent = String(idx).padStart(2, '0');
+        }
+      }
+    });
+  });
+  mm.add('(max-width: 900px)', () => {
+    const track = document.getElementById('testimonialsTrack');
+    if (track) {
+      track.style.width = '100%';
+      track.style.flexDirection = 'column';
+      document.querySelectorAll('.testimonial-card').forEach(c => {
+        c.style.width = '100%';
+        c.style.borderRight = 'none';
+        c.style.borderBottom = '1px solid var(--line)';
+      });
+    }
+  });
+}
+
+/* ──── CONTACT ──── */
+function initContact() {
+  splitWords('.contact-headline[data-split]');
+
+  const tl = gsap.timeline({
+    scrollTrigger: { trigger: '#contact', start: 'top 65%', once: true }
+  });
+  tl.from('#contact .section-meta', { opacity: 0, x: -20, duration: 0.5 })
+    .from('.contact-headline .word', {
+      yPercent: 115, duration: 1.0, stagger: 0.05, ease: 'power4.out'
+    }, '-=0.2')
+    .from('.contact-sub', { opacity: 0, y: 12, duration: 0.6 }, '-=0.5')
+    .from('.industry-item', {
+      opacity: 0, y: 10, duration: 0.4, stagger: 0.05
+    }, '-=0.3')
+    .from('.contact-info-block', {
+      opacity: 0, x: -14, duration: 0.5, stagger: 0.1
+    }, '-=0.2')
+    .from('.form-group, .form-check, .form-submit', {
+      opacity: 0, y: 12, duration: 0.4, stagger: 0.06
+    }, '-=0.4');
+
+  gsap.from('.footer-big', {
+    opacity: 0, scale: 0.96, duration: 1.2,
+    scrollTrigger: { trigger: '.site-footer', start: 'top 85%', once: true }
+  });
+  gsap.from('.footer-col', {
+    opacity: 0, y: 20, duration: 0.7, stagger: 0.1,
+    scrollTrigger: { trigger: '.site-footer', start: 'top 80%', once: true }
+  });
+  gsap.from('.footer-bottom', {
+    opacity: 0, y: 10, duration: 0.5,
+    scrollTrigger: { trigger: '.footer-bottom', start: 'top 95%', once: true }
+  });
+
+  // Form submit
+  document.getElementById('contactForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const btn = e.currentTarget.querySelector('.form-submit span');
+    const original = btn.textContent;
+    btn.textContent = 'Enviado ✓';
+    gsap.fromTo('.form-submit', { scale: 0.95 }, { scale: 1, duration: 0.3, ease: 'back.out(2)' });
+    setTimeout(() => { btn.textContent = original; e.currentTarget.reset(); }, 2800);
+  });
+}
+
+/* ──── THEME TOGGLE ──── */
+function initTheme() {
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const label = btn ? btn.querySelector('.label') : null;
+
+  let stored = null;
+  try { stored = localStorage.getItem('nousia-theme'); } catch (err) {}
+  const initial = stored || 'dark';
+  root.setAttribute('data-theme', initial);
+  if (label) label.textContent = initial === 'dark' ? 'Dark' : 'Light';
+
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    if (label) label.textContent = next === 'dark' ? 'Dark' : 'Light';
+    try { localStorage.setItem('nousia-theme', next); } catch (err) {}
+    gsap.fromTo(btn, { scale: 0.9 }, { scale: 1, duration: 0.3, ease: 'back.out(2)' });
+  });
+}
+
+/* ──── AUDIO TOGGLE ──── */
+function initAudio() {
+  const btn = document.getElementById('audioToggle');
+  if (!btn) return;
+  const label = btn.querySelector('.label');
+  let muted = true;
+  btn.addEventListener('click', () => {
+    muted = !muted;
+    btn.classList.toggle('muted', muted);
+    if (label) label.textContent = muted ? 'Sound off' : 'Sound on';
+    gsap.fromTo(btn, { scale: 0.9 }, { scale: 1, duration: 0.3, ease: 'back.out(2)' });
+  });
+}
+
+/* ──── INIT ALL ──── */
+function initSiteAnimations() {
+  initNavbar();
+  initMarquee();
+  initHero();
+  initHook();
+  initPositioning();
+  initModel();
+  initServices();
+  initTestimonials();
+  initContact();
+
+  requestAnimationFrame(() => ScrollTrigger.refresh());
+}
+
+function boot() {
+  const safe = (fn, name) => {
+    try { fn(); } catch (err) { console.error('[NOUSIA]', name, 'failed:', err); }
+  };
+  safe(initTheme,     'initTheme');
+  safe(initLenis,     'initLenis');
+  safe(initCursor,    'initCursor');
+  safe(initAudio,     'initAudio');
+  safe(initClock,     'initClock');
+  safe(initEntryGate, 'initEntryGate');
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
+
+window.addEventListener('load', () => {
+  try { ScrollTrigger.refresh(); } catch (err) {}
+});
+</script>
+</body>
+</html>
