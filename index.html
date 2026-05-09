@@ -218,6 +218,14 @@ body::before {
 /* ═══════════════════════════════════════════════════════════
    ENTRY GATE
    ═══════════════════════════════════════════════════════════ */
+#canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
 #entry-gate {
   position: fixed; inset: 0; z-index: 1000;
   background: var(--bg);
@@ -1469,6 +1477,7 @@ body::before {
      ENTRY GATE
      ═══════════════════════════════════════════════ -->
 <div id="entry-gate">
+  <canvas id="canvas" aria-hidden="true"></canvas>
   <div class="entry-grid-bg" aria-hidden="true"></div>
 
   <div class="entry-header">
@@ -2181,6 +2190,129 @@ function initNavbar() {
   });
 }
 
+/* ──── ENTRY CANVAS (tubes cursor) ──── */
+function initEntryCanvas() {
+  const canvas = document.getElementById('canvas');
+  if (!canvas) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const ctx = canvas.getContext('2d');
+  const gate = document.getElementById('entry-gate');
+
+  const TUBES = 40;
+  const TRAIL = 65;
+
+  // Pre-computed mappers via gsap.utils — evaluated once, not per frame
+  const mapWidth  = gsap.utils.mapRange(0, TUBES - 1, 6, 0.5);
+  const mapAlpha  = gsap.utils.mapRange(0, TUBES - 1, 0.58, 0.14);
+  const mapLag    = gsap.utils.mapRange(0, TUBES - 1, 0.014, 0.08);
+  const posToHue  = gsap.utils.mapRange(0, 1, 220, 320); // xy position → hue
+  const clampHue  = gsap.utils.clamp(210, 330);
+  const clampGlow = gsap.utils.clamp(6, 38);
+
+  let W = 0, H = 0;
+
+  // Phases evenly spaced so tubes form a coordinated helix (DNA chain)
+  const TWO_PI = Math.PI * 2;
+  const tubes = Array.from({ length: TUBES }, (_, i) => ({
+    x: 0, y: 0, px: 0, py: 0, trail: [],
+    lag:   mapLag(i),
+    width: mapWidth(i),
+    alpha: mapAlpha(i),
+    // Sequential phase: each tube offset by 1/TUBES of a full rotation
+    ph: (i / TUBES) * TWO_PI,
+    speed: 0,
+  }));
+
+  function resize() {
+    W = canvas.width  = gate.offsetWidth;
+    H = canvas.height = gate.offsetHeight;
+    tubes.forEach(t => { t.x = t.px = W / 2; t.y = t.py = H / 2; t.trail = []; });
+  }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  const mouse = { x: -1, y: -1, active: false };
+  let elapsed = 0, driftT = 0;
+
+  gate.addEventListener('mousemove', e => {
+    const r = gate.getBoundingClientRect();
+    mouse.x = e.clientX - r.left;
+    mouse.y = e.clientY - r.top;
+    mouse.active = true;
+  }, { passive: true });
+  gate.addEventListener('mouseleave', () => { mouse.active = false; });
+
+  // gsap.ticker shares GSAP's RAF — no duplicate animation loops
+  function tick() {
+    if (gate.style.display === 'none') { gsap.ticker.remove(tick); return; }
+
+    elapsed += 0.004;
+    let bx, by;
+
+    if (mouse.active) {
+      bx = mouse.x; by = mouse.y;
+    } else {
+      driftT += 0.002;
+      bx = W * 0.5 + Math.cos(driftT) * W * 0.22;
+      by = H * 0.5 + Math.sin(driftT * 0.61) * H * 0.18;
+    }
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Helix angle advances every frame — rotates the whole bundle
+    const helixAngle = elapsed * 1.4;
+
+    tubes.forEach(tube => {
+      // All tubes orbit the same target at the same radius, evenly spaced in phase
+      const angle = helixAngle + tube.ph;
+      const tx = bx + Math.cos(angle) * 17;
+      const ty = by + Math.sin(angle) * 17;
+
+      tube.px = tube.x; tube.py = tube.y;
+      tube.x += (tx - tube.x) * tube.lag;
+      tube.y += (ty - tube.y) * tube.lag;
+
+      // Speed measurement for dynamic lighting
+      const dx = tube.x - tube.px, dy = tube.y - tube.py;
+      tube.speed = Math.sqrt(dx * dx + dy * dy);
+
+      tube.trail.push({ x: tube.x, y: tube.y });
+      if (tube.trail.length > TRAIL) tube.trail.shift();
+      if (tube.trail.length < 2) return;
+
+      // Procedural color: hue = blend of tube xy position + slow time wave
+      const nx = gsap.utils.normalize(0, W, tube.x);
+      const ny = gsap.utils.normalize(0, H, tube.y);
+      const h  = clampHue(posToHue(nx * 0.65 + ny * 0.35) + Math.sin(elapsed * 0.45) * 18);
+
+      // Dynamic lighting: glow intensifies with speed
+      const glow = clampGlow(tube.speed * 5 + 10);
+
+      ctx.save();
+      ctx.lineCap    = 'round';
+      ctx.lineJoin   = 'round';
+      ctx.lineWidth  = tube.width;
+      ctx.globalAlpha = tube.alpha;
+      ctx.shadowBlur  = glow;
+      ctx.shadowColor = `hsl(${h},72%,58%)`;
+      ctx.strokeStyle = `hsl(${h},72%,58%)`;
+
+      ctx.beginPath();
+      ctx.moveTo(tube.trail[0].x, tube.trail[0].y);
+      for (let j = 1; j < tube.trail.length; j++) {
+        const xc = (tube.trail[j - 1].x + tube.trail[j].x) / 2;
+        const yc = (tube.trail[j - 1].y + tube.trail[j].y) / 2;
+        ctx.quadraticCurveTo(tube.trail[j - 1].x, tube.trail[j - 1].y, xc, yc);
+      }
+      ctx.stroke();
+      ctx.restore();
+    });
+  }
+
+  gsap.ticker.add(tick);
+}
+
 /* ──── HERO ──── */
 function initHero() {
   splitWords('.hero-line[data-split]');
@@ -2455,8 +2587,9 @@ function boot() {
   safe(initLenis,     'initLenis');
   safe(initCursor,    'initCursor');
   safe(initAudio,     'initAudio');
-  safe(initClock,     'initClock');
-  safe(initEntryGate, 'initEntryGate');
+  safe(initClock,       'initClock');
+  safe(initEntryCanvas, 'initEntryCanvas');
+  safe(initEntryGate,   'initEntryGate');
 }
 
 if (document.readyState === 'loading') {
