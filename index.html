@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
-<script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
+<link rel="preload" href="./assets/nousia-logo.png" as="image" />
 
 <style>
 /* ═══════════════════════════════════════════════════════════
@@ -378,7 +378,8 @@ body::before {
   padding: 0.9rem var(--gutter);
 }
 .nav-logo { display: flex; align-items: center; justify-self: start; }
-.logo-svg { width: 115px; height: auto; display: block; }
+.logo-svg { width: 115px; height: auto; display: block; filter: var(--logo-filter); }
+.entry-logo-mark svg { filter: var(--logo-filter); }
 .nav-links {
   display: flex;
   gap: 2.5rem;
@@ -1487,13 +1488,7 @@ body::before {
 }
 
 @media (max-width: 768px) {
-  #hero { padding-bottom: calc(56vw + 80px); }
-  .hero-spline {
-    height: 56vw;
-    width: 100%;
-    right: 0;
-    pointer-events: auto;
-  }
+  .hero-spline { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1527,7 +1522,7 @@ body::before {
     <div class="entry-logo-mark" aria-label="NOUSIA">
       <svg viewBox="0 0 776 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NOUSIA" preserveAspectRatio="xMidYMid meet">
         <title>NOUSIA</title>
-        <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" style="filter: var(--logo-filter);" />
+        <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" />
       </svg>
     </div>
     <h2 class="entry-title" data-split>Activar <em class="accent">inteligencia</em></h2>
@@ -1548,7 +1543,7 @@ body::before {
   <a href="#" class="nav-logo" aria-label="NOUSIA — Inicio">
     <svg class="logo-svg" viewBox="0 0 776 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NOUSIA" preserveAspectRatio="xMidYMid meet">
       <title>NOUSIA</title>
-      <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" style="filter: var(--logo-filter);" />
+      <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" />
     </svg>
   </a>
   <ul class="nav-links">
@@ -1608,9 +1603,7 @@ body::before {
       <span>Scroll — activar motor</span>
     </div>
 
-    <div class="hero-spline" aria-hidden="true">
-      <spline-viewer url="https://prod.spline.design/7kWR4hmPyslLWhbO/scene.splinecode" background="transparent"></spline-viewer>
-    </div>
+    <div class="hero-spline" aria-hidden="true"></div>
   </section>
 
   <!-- ─── MARQUEE TICKER ─── -->
@@ -1899,7 +1892,7 @@ body::before {
         <div class="footer-col">
           <h4>[NOUSIA]</h4>
           <svg class="logo-svg" style="width: 100px;" viewBox="0 0 776 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NOUSIA" preserveAspectRatio="xMidYMid meet">
-            <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" style="filter: var(--logo-filter); opacity: 0.9;" />
+            <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" style="opacity: 0.9;" />
           </svg>
           <p class="brand-desc">Motor de inteligencia estratégica para organizaciones que buscan el siguiente nivel.</p>
           <div class="footer-social-row">
@@ -2116,10 +2109,7 @@ function initEntryGate() {
 
   const tl = gsap.timeline({ delay: 0.3 });
   tl.from('.entry-grid-bg', { opacity: 0, duration: 1.4 }, 0)
-    .from('.entry-header > div, .entry-footer-row > div', {
-      opacity: 0, y: -6, duration: 0.6, stagger: 0.08
-    }, 0.1)
-    .from('.entry-logo-mark', { opacity: 0, y: 30, scale: 0.94, duration: 1.1, ease: 'power4.out' }, '-=0.2')
+    .from('.entry-logo-mark', { opacity: 0, y: 30, scale: 0.94, duration: 1.1, ease: 'power4.out' }, 0.2)
     .from('.entry-title .word', {
       yPercent: 110, opacity: 0, duration: 0.8, stagger: 0.06, ease: 'power4.out'
     }, '-=0.4')
@@ -2146,7 +2136,7 @@ function initEntryGate() {
       const out = gsap.timeline({
         onComplete: () => { clearTimeout(safety); reveal(); }
       });
-      out.to('.entry-btn, .entry-sub, .entry-logo-mark, .entry-header > div, .entry-footer-row > div', {
+      out.to('.entry-btn, .entry-sub, .entry-logo-mark', {
         opacity: 0, y: -8, duration: 0.3, stagger: 0.03, ease: 'power2.in'
       })
       .to('.entry-title .word', {
@@ -2208,6 +2198,7 @@ function initEntryCanvas() {
   const canvas = document.getElementById('canvas');
   if (!canvas) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
 
   const ctx = canvas.getContext('2d');
   const gate = document.getElementById('entry-gate');
@@ -2331,12 +2322,9 @@ function initHero() {
   splitWords('.hero-line[data-split]');
 
   const tl = gsap.timeline({ delay: 0.2 });
-  tl.from('.hero-topline > div', {
-    opacity: 0, y: -10, duration: 0.6, stagger: 0.08
-  })
-  .from('.hero-line .word', {
+  tl.from('.hero-line .word', {
     yPercent: 115, duration: 1.1, stagger: { each: 0.045 }, ease: 'power4.out'
-  }, '-=0.3')
+  })
   .from('.hero-foot', { opacity: 0, y: 20, duration: 0.7 }, '-=0.5')
   .from('.hero-stats .stat', {
     opacity: 0, x: -10, duration: 0.5, stagger: 0.1
@@ -2349,7 +2337,7 @@ function initHero() {
     yPercent: -20, ease: 'none',
     scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.5 }
   });
-  gsap.to('.hero-topline, .hero-foot', {
+  gsap.to('.hero-foot', {
     opacity: 0.1, ease: 'none',
     scrollTrigger: { trigger: '#hero', start: '40% top', end: 'bottom top', scrub: true }
   });
@@ -2577,11 +2565,31 @@ function initAudio() {
   });
 }
 
+/* ──── HERO SPLINE (lazy, desktop only) ──── */
+function initHeroSpline() {
+  if (window.matchMedia('(max-width: 768px), (hover: none), (pointer: coarse)').matches) return;
+  const container = document.querySelector('.hero-spline');
+  if (!container) return;
+
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.src = 'https://unpkg.com/@splinetool/viewer/build/spline-viewer.js';
+  script.onload = () => {
+    const viewer = document.createElement('spline-viewer');
+    viewer.setAttribute('url', 'https://prod.spline.design/7kWR4hmPyslLWhbO/scene.splinecode');
+    viewer.setAttribute('background', 'transparent');
+    viewer.style.cssText = 'display:block;width:100%;height:100%;';
+    container.appendChild(viewer);
+  };
+  document.head.appendChild(script);
+}
+
 /* ──── INIT ALL ──── */
 function initSiteAnimations() {
   initNavbar();
   initMarquee();
   initHero();
+  initHeroSpline();
   initHook();
   initPositioning();
   initModel();
@@ -2596,11 +2604,9 @@ function boot() {
   const safe = (fn, name) => {
     try { fn(); } catch (err) { console.error('[NOUSIA]', name, 'failed:', err); }
   };
-  safe(initTheme,     'initTheme');
-  safe(initLenis,     'initLenis');
-  safe(initCursor,    'initCursor');
-  safe(initAudio,     'initAudio');
-  safe(initClock,       'initClock');
+  safe(initTheme,       'initTheme');
+  safe(initLenis,       'initLenis');
+  safe(initCursor,      'initCursor');
   safe(initEntryCanvas, 'initEntryCanvas');
   safe(initEntryGate,   'initEntryGate');
 }
