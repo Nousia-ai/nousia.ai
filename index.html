@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="preload" href="./assets/nousia-logo.png" as="image" />
 
 <style>
 /* ═══════════════════════════════════════════════════════════
@@ -218,6 +219,14 @@ body::before {
 /* ═══════════════════════════════════════════════════════════
    ENTRY GATE
    ═══════════════════════════════════════════════════════════ */
+#canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
 #entry-gate {
   position: fixed; inset: 0; z-index: 1000;
   background: var(--bg);
@@ -270,8 +279,8 @@ body::before {
   z-index: 2;
 }
 .entry-logo-mark {
-  width: min(96vw, 1700px);
-  max-width: 96vw;
+  width: min(57.6vw, 1020px);
+  max-width: 57.6vw;
   margin-bottom: 2rem;
   overflow: visible;
   display: flex;
@@ -369,7 +378,8 @@ body::before {
   padding: 0.9rem var(--gutter);
 }
 .nav-logo { display: flex; align-items: center; justify-self: start; }
-.logo-svg { width: 115px; height: auto; display: block; }
+.logo-svg { width: 115px; height: auto; display: block; filter: var(--logo-filter); }
+.entry-logo-mark svg { filter: var(--logo-filter); }
 .nav-links {
   display: flex;
   gap: 2.5rem;
@@ -529,15 +539,16 @@ body::before {
 }
 .hero-headline {
   font-family: var(--font-display);
-  font-size: clamp(3.5rem, 11vw, 12rem);
-  line-height: 0.82;
+  font-size: clamp(2.8rem, 8vw, 9.5rem);
+  line-height: 1.05;
   letter-spacing: -0.02em;
   text-transform: uppercase;
   margin-bottom: 2rem;
 }
 .hero-line {
   display: block;
-  overflow: hidden;
+  overflow: visible;
+  padding-top: 0.08em;
 }
 .hero-line--offset { padding-left: 0; }
 .hero-line--offset-right { text-align: right; }
@@ -1445,6 +1456,41 @@ body::before {
   .hero-topline .right { text-align: left; align-items: flex-start; }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   HERO SPLINE 3D VIEWER — esquina inferior derecha
+   ═══════════════════════════════════════════════════════════ */
+.hero-spline {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 100vh;
+  width: 46%;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image:
+    linear-gradient(to top,  transparent 0%, black 38%),
+    linear-gradient(to right, transparent 0%, black 18%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to top,  transparent 0%, black 38%),
+    linear-gradient(to right, transparent 0%, black 18%);
+  mask-composite: intersect;
+}
+:root[data-theme="light"] .hero-spline {
+  mix-blend-mode: multiply;
+}
+.hero-spline spline-viewer {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+  .hero-spline { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -1469,22 +1515,14 @@ body::before {
      ENTRY GATE
      ═══════════════════════════════════════════════ -->
 <div id="entry-gate">
+  <canvas id="canvas" aria-hidden="true"></canvas>
   <div class="entry-grid-bg" aria-hidden="true"></div>
-
-  <div class="entry-header">
-    <div class="col-left">
-      <span>[NOUSIA] — Intelligence Engine</span>
-    </div>
-    <div class="col-right">
-      <span id="gate-time">00:00:00 CDMX</span>
-    </div>
-  </div>
 
   <div class="entry-center">
     <div class="entry-logo-mark" aria-label="NOUSIA">
       <svg viewBox="0 0 776 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NOUSIA" preserveAspectRatio="xMidYMid meet">
         <title>NOUSIA</title>
-        <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" style="filter: var(--logo-filter);" />
+        <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" />
       </svg>
     </div>
     <h2 class="entry-title" data-split>Activar <em class="accent">inteligencia</em></h2>
@@ -1496,15 +1534,6 @@ body::before {
     </button>
   </div>
 
-  <div class="entry-footer-row">
-    <div class="col-left">
-      <span>NOUSIA © 2026</span>
-      <span>19.4326° N / 99.1332° W</span>
-    </div>
-    <div class="col-right">
-      <span>V. 2.0 / ES</span>
-    </div>
-  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════
@@ -1514,7 +1543,7 @@ body::before {
   <a href="#" class="nav-logo" aria-label="NOUSIA — Inicio">
     <svg class="logo-svg" viewBox="0 0 776 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NOUSIA" preserveAspectRatio="xMidYMid meet">
       <title>NOUSIA</title>
-      <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" style="filter: var(--logo-filter);" />
+      <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" />
     </svg>
   </a>
   <ul class="nav-links">
@@ -1528,10 +1557,6 @@ body::before {
       <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
       <span class="label">Tema</span>
-    </button>
-    <button id="audioToggle" class="muted" type="button" aria-label="Toggle audio">
-      <span class="bars"><span></span><span></span><span></span></span>
-      <span class="label">Sound off</span>
     </button>
     <a href="#contact" class="btn-nav-cta">
       <span>Agenda llamada</span>
@@ -1547,17 +1572,6 @@ body::before {
 
   <!-- ─── HERO ─── -->
   <section id="hero">
-    <div class="hero-topline">
-      <div class="left">
-        <span>[00] — Agencia de IA y automatización</span>
-        <span><strong>CDMX, MX</strong> — 19.4326° N / 99.1332° W</span>
-      </div>
-      <div class="right">
-        <span>Intelligence Engine v2.0</span>
-        <span id="hero-time">00:00:00 — Abril 2026</span>
-      </div>
-    </div>
-
     <div class="hero-body">
       <h1 class="hero-headline" aria-label="Inteligencia estratégica. Desempeño mejorado. Resultados NOUSIA.">
         <span class="hero-line" data-split>Inteligencia</span>
@@ -1588,6 +1602,8 @@ body::before {
       <span class="bar"></span>
       <span>Scroll — activar motor</span>
     </div>
+
+    <div class="hero-spline" aria-hidden="true"></div>
   </section>
 
   <!-- ─── MARQUEE TICKER ─── -->
@@ -1876,7 +1892,7 @@ body::before {
         <div class="footer-col">
           <h4>[NOUSIA]</h4>
           <svg class="logo-svg" style="width: 100px;" viewBox="0 0 776 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NOUSIA" preserveAspectRatio="xMidYMid meet">
-            <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" style="filter: var(--logo-filter); opacity: 0.9;" />
+            <image href="./assets/nousia-logo.png" x="0" y="0" width="776" height="200" preserveAspectRatio="xMidYMid meet" style="opacity: 0.9;" />
           </svg>
           <p class="brand-desc">Motor de inteligencia estratégica para organizaciones que buscan el siguiente nivel.</p>
           <div class="footer-social-row">
@@ -1916,7 +1932,6 @@ body::before {
       </div>
       <div class="footer-bottom">
         <span>© 2026 NOUSIA. Todos los derechos reservados.</span>
-        <span>CDMX, México — 19.4326° N / 99.1332° W</span>
       </div>
     </footer>
   </section>
@@ -2094,10 +2109,7 @@ function initEntryGate() {
 
   const tl = gsap.timeline({ delay: 0.3 });
   tl.from('.entry-grid-bg', { opacity: 0, duration: 1.4 }, 0)
-    .from('.entry-header > div, .entry-footer-row > div', {
-      opacity: 0, y: -6, duration: 0.6, stagger: 0.08
-    }, 0.1)
-    .from('.entry-logo-mark', { opacity: 0, y: 30, scale: 0.94, duration: 1.1, ease: 'power4.out' }, '-=0.2')
+    .from('.entry-logo-mark', { opacity: 0, y: 30, scale: 0.94, duration: 1.1, ease: 'power4.out' }, 0.2)
     .from('.entry-title .word', {
       yPercent: 110, opacity: 0, duration: 0.8, stagger: 0.06, ease: 'power4.out'
     }, '-=0.4')
@@ -2124,7 +2136,7 @@ function initEntryGate() {
       const out = gsap.timeline({
         onComplete: () => { clearTimeout(safety); reveal(); }
       });
-      out.to('.entry-btn, .entry-sub, .entry-logo-mark, .entry-header > div, .entry-footer-row > div', {
+      out.to('.entry-btn, .entry-sub, .entry-logo-mark', {
         opacity: 0, y: -8, duration: 0.3, stagger: 0.03, ease: 'power2.in'
       })
       .to('.entry-title .word', {
@@ -2181,17 +2193,138 @@ function initNavbar() {
   });
 }
 
+/* ──── ENTRY CANVAS (tubes cursor) ──── */
+function initEntryCanvas() {
+  const canvas = document.getElementById('canvas');
+  if (!canvas) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
+
+  const ctx = canvas.getContext('2d');
+  const gate = document.getElementById('entry-gate');
+
+  const TUBES = 40;
+  const TRAIL = 65;
+
+  // Pre-computed mappers via gsap.utils — evaluated once, not per frame
+  const mapWidth  = gsap.utils.mapRange(0, TUBES - 1, 6, 0.5);
+  const mapAlpha  = gsap.utils.mapRange(0, TUBES - 1, 0.58, 0.14);
+  const mapLag    = gsap.utils.mapRange(0, TUBES - 1, 0.014, 0.08);
+  const posToHue  = gsap.utils.mapRange(0, 1, 220, 320); // xy position → hue
+  const clampHue  = gsap.utils.clamp(210, 330);
+  const clampGlow = gsap.utils.clamp(6, 38);
+
+  let W = 0, H = 0;
+
+  // Phases evenly spaced so tubes form a coordinated helix (DNA chain)
+  const TWO_PI = Math.PI * 2;
+  const tubes = Array.from({ length: TUBES }, (_, i) => ({
+    x: 0, y: 0, px: 0, py: 0, trail: [],
+    lag:   mapLag(i),
+    width: mapWidth(i),
+    alpha: mapAlpha(i),
+    // Sequential phase: each tube offset by 1/TUBES of a full rotation
+    ph: (i / TUBES) * TWO_PI,
+    speed: 0,
+  }));
+
+  function resize() {
+    W = canvas.width  = gate.offsetWidth;
+    H = canvas.height = gate.offsetHeight;
+    tubes.forEach(t => { t.x = t.px = W / 2; t.y = t.py = H / 2; t.trail = []; });
+  }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  const mouse = { x: -1, y: -1, active: false };
+  let elapsed = 0, driftT = 0;
+
+  gate.addEventListener('mousemove', e => {
+    const r = gate.getBoundingClientRect();
+    mouse.x = e.clientX - r.left;
+    mouse.y = e.clientY - r.top;
+    mouse.active = true;
+  }, { passive: true });
+  gate.addEventListener('mouseleave', () => { mouse.active = false; });
+
+  // gsap.ticker shares GSAP's RAF — no duplicate animation loops
+  function tick() {
+    if (gate.style.display === 'none') { gsap.ticker.remove(tick); return; }
+
+    elapsed += 0.004;
+    let bx, by;
+
+    if (mouse.active) {
+      bx = mouse.x; by = mouse.y;
+    } else {
+      driftT += 0.002;
+      bx = W * 0.5 + Math.cos(driftT) * W * 0.22;
+      by = H * 0.5 + Math.sin(driftT * 0.61) * H * 0.18;
+    }
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Helix angle advances every frame — rotates the whole bundle
+    const helixAngle = elapsed * 1.4;
+
+    tubes.forEach(tube => {
+      // All tubes orbit the same target at the same radius, evenly spaced in phase
+      const angle = helixAngle + tube.ph;
+      const tx = bx + Math.cos(angle) * 17;
+      const ty = by + Math.sin(angle) * 17;
+
+      tube.px = tube.x; tube.py = tube.y;
+      tube.x += (tx - tube.x) * tube.lag;
+      tube.y += (ty - tube.y) * tube.lag;
+
+      // Speed measurement for dynamic lighting
+      const dx = tube.x - tube.px, dy = tube.y - tube.py;
+      tube.speed = Math.sqrt(dx * dx + dy * dy);
+
+      tube.trail.push({ x: tube.x, y: tube.y });
+      if (tube.trail.length > TRAIL) tube.trail.shift();
+      if (tube.trail.length < 2) return;
+
+      // Procedural color: hue = blend of tube xy position + slow time wave
+      const nx = gsap.utils.normalize(0, W, tube.x);
+      const ny = gsap.utils.normalize(0, H, tube.y);
+      const h  = clampHue(posToHue(nx * 0.65 + ny * 0.35) + Math.sin(elapsed * 0.45) * 18);
+
+      // Dynamic lighting: glow intensifies with speed
+      const glow = clampGlow(tube.speed * 5 + 10);
+
+      ctx.save();
+      ctx.lineCap    = 'round';
+      ctx.lineJoin   = 'round';
+      ctx.lineWidth  = tube.width;
+      ctx.globalAlpha = tube.alpha;
+      ctx.shadowBlur  = glow;
+      ctx.shadowColor = `hsl(${h},72%,58%)`;
+      ctx.strokeStyle = `hsl(${h},72%,58%)`;
+
+      ctx.beginPath();
+      ctx.moveTo(tube.trail[0].x, tube.trail[0].y);
+      for (let j = 1; j < tube.trail.length; j++) {
+        const xc = (tube.trail[j - 1].x + tube.trail[j].x) / 2;
+        const yc = (tube.trail[j - 1].y + tube.trail[j].y) / 2;
+        ctx.quadraticCurveTo(tube.trail[j - 1].x, tube.trail[j - 1].y, xc, yc);
+      }
+      ctx.stroke();
+      ctx.restore();
+    });
+  }
+
+  gsap.ticker.add(tick);
+}
+
 /* ──── HERO ──── */
 function initHero() {
   splitWords('.hero-line[data-split]');
 
   const tl = gsap.timeline({ delay: 0.2 });
-  tl.from('.hero-topline > div', {
-    opacity: 0, y: -10, duration: 0.6, stagger: 0.08
-  })
-  .from('.hero-line .word', {
+  tl.from('.hero-line .word', {
     yPercent: 115, duration: 1.1, stagger: { each: 0.045 }, ease: 'power4.out'
-  }, '-=0.3')
+  })
   .from('.hero-foot', { opacity: 0, y: 20, duration: 0.7 }, '-=0.5')
   .from('.hero-stats .stat', {
     opacity: 0, x: -10, duration: 0.5, stagger: 0.1
@@ -2204,7 +2337,7 @@ function initHero() {
     yPercent: -20, ease: 'none',
     scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.5 }
   });
-  gsap.to('.hero-topline, .hero-foot', {
+  gsap.to('.hero-foot', {
     opacity: 0.1, ease: 'none',
     scrollTrigger: { trigger: '#hero', start: '40% top', end: 'bottom top', scrub: true }
   });
@@ -2432,11 +2565,31 @@ function initAudio() {
   });
 }
 
+/* ──── HERO SPLINE (lazy, desktop only) ──── */
+function initHeroSpline() {
+  if (window.matchMedia('(max-width: 768px), (hover: none), (pointer: coarse)').matches) return;
+  const container = document.querySelector('.hero-spline');
+  if (!container) return;
+
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.src = 'https://unpkg.com/@splinetool/viewer/build/spline-viewer.js';
+  script.onload = () => {
+    const viewer = document.createElement('spline-viewer');
+    viewer.setAttribute('url', 'https://prod.spline.design/7kWR4hmPyslLWhbO/scene.splinecode');
+    viewer.setAttribute('background', 'transparent');
+    viewer.style.cssText = 'display:block;width:100%;height:100%;';
+    container.appendChild(viewer);
+  };
+  document.head.appendChild(script);
+}
+
 /* ──── INIT ALL ──── */
 function initSiteAnimations() {
   initNavbar();
   initMarquee();
   initHero();
+  initHeroSpline();
   initHook();
   initPositioning();
   initModel();
@@ -2451,12 +2604,11 @@ function boot() {
   const safe = (fn, name) => {
     try { fn(); } catch (err) { console.error('[NOUSIA]', name, 'failed:', err); }
   };
-  safe(initTheme,     'initTheme');
-  safe(initLenis,     'initLenis');
-  safe(initCursor,    'initCursor');
-  safe(initAudio,     'initAudio');
-  safe(initClock,     'initClock');
-  safe(initEntryGate, 'initEntryGate');
+  safe(initTheme,       'initTheme');
+  safe(initLenis,       'initLenis');
+  safe(initCursor,      'initCursor');
+  safe(initEntryCanvas, 'initEntryCanvas');
+  safe(initEntryGate,   'initEntryGate');
 }
 
 if (document.readyState === 'loading') {
