@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
 
 <style>
 /* ═══════════════════════════════════════════════════════════
@@ -537,15 +538,16 @@ body::before {
 }
 .hero-headline {
   font-family: var(--font-display);
-  font-size: clamp(3.5rem, 11vw, 12rem);
-  line-height: 0.82;
+  font-size: clamp(2.8rem, 8vw, 9.5rem);
+  line-height: 1.05;
   letter-spacing: -0.02em;
   text-transform: uppercase;
   margin-bottom: 2rem;
 }
 .hero-line {
   display: block;
-  overflow: hidden;
+  overflow: visible;
+  padding-top: 0.08em;
 }
 .hero-line--offset { padding-left: 0; }
 .hero-line--offset-right { text-align: right; }
@@ -1453,6 +1455,47 @@ body::before {
   .hero-topline .right { text-align: left; align-items: flex-start; }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   HERO SPLINE 3D VIEWER — esquina inferior derecha
+   ═══════════════════════════════════════════════════════════ */
+.hero-spline {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 100vh;
+  width: 46%;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image:
+    linear-gradient(to top,  transparent 0%, black 38%),
+    linear-gradient(to right, transparent 0%, black 18%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to top,  transparent 0%, black 38%),
+    linear-gradient(to right, transparent 0%, black 18%);
+  mask-composite: intersect;
+}
+:root[data-theme="light"] .hero-spline {
+  mix-blend-mode: multiply;
+}
+.hero-spline spline-viewer {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+  #hero { padding-bottom: calc(56vw + 80px); }
+  .hero-spline {
+    height: 56vw;
+    width: 100%;
+    right: 0;
+    pointer-events: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -1480,15 +1523,6 @@ body::before {
   <canvas id="canvas" aria-hidden="true"></canvas>
   <div class="entry-grid-bg" aria-hidden="true"></div>
 
-  <div class="entry-header">
-    <div class="col-left">
-      <span>[NOUSIA] — Intelligence Engine</span>
-    </div>
-    <div class="col-right">
-      <span id="gate-time">00:00:00 CDMX</span>
-    </div>
-  </div>
-
   <div class="entry-center">
     <div class="entry-logo-mark" aria-label="NOUSIA">
       <svg viewBox="0 0 776 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NOUSIA" preserveAspectRatio="xMidYMid meet">
@@ -1505,15 +1539,6 @@ body::before {
     </button>
   </div>
 
-  <div class="entry-footer-row">
-    <div class="col-left">
-      <span>NOUSIA © 2026</span>
-      <span>19.4326° N / 99.1332° W</span>
-    </div>
-    <div class="col-right">
-      <span>V. 2.0 / ES</span>
-    </div>
-  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════
@@ -1538,10 +1563,6 @@ body::before {
       <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
       <span class="label">Tema</span>
     </button>
-    <button id="audioToggle" class="muted" type="button" aria-label="Toggle audio">
-      <span class="bars"><span></span><span></span><span></span></span>
-      <span class="label">Sound off</span>
-    </button>
     <a href="#contact" class="btn-nav-cta">
       <span>Agenda llamada</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -1556,17 +1577,6 @@ body::before {
 
   <!-- ─── HERO ─── -->
   <section id="hero">
-    <div class="hero-topline">
-      <div class="left">
-        <span>[00] — Agencia de IA y automatización</span>
-        <span><strong>CDMX, MX</strong> — 19.4326° N / 99.1332° W</span>
-      </div>
-      <div class="right">
-        <span>Intelligence Engine v2.0</span>
-        <span id="hero-time">00:00:00 — Abril 2026</span>
-      </div>
-    </div>
-
     <div class="hero-body">
       <h1 class="hero-headline" aria-label="Inteligencia estratégica. Desempeño mejorado. Resultados NOUSIA.">
         <span class="hero-line" data-split>Inteligencia</span>
@@ -1596,6 +1606,10 @@ body::before {
     <div class="scroll-indicator" aria-hidden="true">
       <span class="bar"></span>
       <span>Scroll — activar motor</span>
+    </div>
+
+    <div class="hero-spline" aria-hidden="true">
+      <spline-viewer url="https://prod.spline.design/7kWR4hmPyslLWhbO/scene.splinecode" background="transparent"></spline-viewer>
     </div>
   </section>
 
@@ -1925,7 +1939,6 @@ body::before {
       </div>
       <div class="footer-bottom">
         <span>© 2026 NOUSIA. Todos los derechos reservados.</span>
-        <span>CDMX, México — 19.4326° N / 99.1332° W</span>
       </div>
     </footer>
   </section>
