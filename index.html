@@ -528,9 +528,9 @@ body::before {
   margin: 0 auto;
   width: 100%;
   display: grid;
-  grid-template-columns: 1.2fr 1fr 0.9fr;
-  gap: 3rem;
-  align-items: flex-end;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+  justify-items: start;
   padding-top: 2rem;
   border-top: 1px solid var(--line);
   position: relative;
@@ -545,30 +545,6 @@ body::before {
 .hero-sub strong {
   color: var(--text);
   font-weight: 500;
-}
-.hero-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-.hero-stats .stat {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 8px;
-}
-.hero-stats .stat strong {
-  font-family: var(--font-display);
-  font-size: 32px;
-  color: var(--text);
-  font-weight: 400;
-  letter-spacing: 0;
 }
 .hero-cta {
   display: inline-flex;
@@ -1061,7 +1037,8 @@ body::before {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 4rem;
-  align-items: start;
+  /* center: sin la atribucion la cita sola dejaba ~300px muertos al pie de la tarjeta */
+  align-items: center;
   border-right: 1px solid var(--line);
   flex-shrink: 0;
   min-height: 70vh;
@@ -1083,42 +1060,21 @@ body::before {
   line-height: 1.15;
   letter-spacing: -0.005em;
   text-transform: uppercase;
-  margin-bottom: 3rem;
   font-weight: 400;
-}
-.testimonial-cite {
-  font-style: normal;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-top: 2rem;
-  border-top: 1px solid var(--line);
-}
-.testimonial-cite strong {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0;
-}
-.testimonial-cite .role {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-.testimonial-cite .company {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--accent-text);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-top: 6px;
 }
 
 @media (max-width: 900px) {
+  .testimonials-track {
+    width: 100%;
+    flex-direction: column;
+  }
   .testimonial-card {
     grid-template-columns: 1fr;
+    width: 100%;
     min-height: auto;
     padding: 4rem var(--gutter);
+    border-right: none;
+    border-bottom: 1px solid var(--line);
   }
   .testimonials-header { grid-template-columns: 1fr; }
 }
@@ -1260,23 +1216,6 @@ body::before {
   outline: none;
   border-bottom-color: var(--accent);
 }
-.form-check {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin-top: 1rem;
-}
-.form-check input[type="checkbox"] {
-  width: 16px; height: 16px;
-  accent-color: var(--accent);
-  margin-top: 2px;
-  flex-shrink: 0;
-}
-.form-check label {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
 .form-submit {
   display: inline-flex;
   align-items: center;
@@ -1395,7 +1334,6 @@ body::before {
    RESPONSIVE
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 1100px) {
-  .hero-foot { grid-template-columns: 1fr; gap: 2rem; }
   .hero-cta { justify-self: start; }
   .model-inner { grid-template-columns: 1fr; gap: 3rem; }
   .model-left { position: static; }
@@ -1470,6 +1408,16 @@ body::before {
   .hero-spline { display: none; }
 }
 
+/* Sin el bloque de datos el pie del hero es mucho mas corto: con space-between quedaba
+   un hueco de ~230px a media pantalla. Se agrupa arriba y el aire baja junto al indicador. */
+@media (max-width: 768px) {
+  #hero {
+    justify-content: flex-start;
+    gap: 2.75rem;
+    padding-top: 124px;
+  }
+}
+
 /* Con el robot visible, el pie del hero (texto, stats y CTA) se queda a su izquierda
    para no encimarse con él. El robot ocupa el 46% derecho; el pie, como máximo el 52% izquierdo. */
 @media (min-width: 769px) and (hover: hover) and (pointer: fine) {
@@ -1477,29 +1425,15 @@ body::before {
     --foot-left: max(var(--gutter), calc((100vw - var(--content)) / 2));
     width: calc(52vw - var(--foot-left));
     margin: 0 0 0 calc(var(--foot-left) - var(--gutter));
-    grid-template-columns: 1fr;
-    gap: 2rem;
   }
   .hero-cta { justify-self: start; }
-}
-@media (min-width: 1200px) and (hover: hover) and (pointer: fine) {
-  .hero-foot {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: "sub stats" "cta stats";
-    gap: 2rem 3rem;
-    align-items: end;
-  }
-  .hero-sub   { grid-area: sub; }
-  .hero-stats { grid-area: stats; }
-  .hero-cta   { grid-area: cta; }
 }
 
 /* Estados de error del formulario de contacto */
 .form-group.is-invalid input,
 .form-group.is-invalid textarea,
 .form-group.is-invalid select { border-bottom-color: var(--error); }
-.form-group.is-invalid label,
-.form-check.is-invalid label { color: var(--error); }
+.form-group.is-invalid label { color: var(--error); }
 .form-status { font-size: 13px; line-height: 1.5; color: var(--text-muted); min-height: 1.5em; }
 .form-status.is-error { color: var(--error); }
 
@@ -1598,11 +1532,6 @@ body::before {
         datos, procesos y conocimiento en capacidad real
         de decisión y ejecución institucional.
       </p>
-      <div class="hero-stats">
-        <div class="stat"><span>Proyectos</span><strong>38+</strong></div>
-        <div class="stat"><span>Industrias</span><strong>07</strong></div>
-        <div class="stat"><span>CDMX — MX</span><strong>2026</strong></div>
-      </div>
       <a href="#contact" class="hero-cta">
         <span class="dot"></span>
         <span>Habla con nosotros</span>
@@ -1782,11 +1711,6 @@ body::before {
             <div class="testimonial-quote">
               Nousia transformó la manera en que tomamos decisiones. Los modelos predictivos nos dieron visibilidad que nunca habíamos tenido en 15 años de operación.
             </div>
-            <cite class="testimonial-cite">
-              <strong>María González</strong>
-              <span class="role">Directora de Operaciones</span>
-              <span class="company">Manufactura MX</span>
-            </cite>
           </div>
         </article>
         <article class="testimonial-card">
@@ -1795,11 +1719,6 @@ body::before {
             <div class="testimonial-quote">
               En 90 días pasamos de procesar solicitudes manualmente a tener un sistema autónomo que maneja el 80% del volumen. El ROI fue inmediato.
             </div>
-            <cite class="testimonial-cite">
-              <strong>Carlos Ruiz</strong>
-              <span class="role">Director de Innovación</span>
-              <span class="company">Institución Pública CDMX</span>
-            </cite>
           </div>
         </article>
         <article class="testimonial-card">
@@ -1808,11 +1727,6 @@ body::before {
             <div class="testimonial-quote">
               No es un proveedor. Es el equipo de IA que necesitábamos sin el costo de construirlo internamente. Estratégicos, directos y entregaron lo prometido.
             </div>
-            <cite class="testimonial-cite">
-              <strong>Ana López</strong>
-              <span class="role">CEO</span>
-              <span class="company">Startup Fintech MX</span>
-            </cite>
           </div>
         </article>
       </div>
@@ -1867,29 +1781,13 @@ body::before {
             <input type="text" id="cf-company" name="empresa" placeholder="Tu organización" autocomplete="organization" />
           </div>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="cf-email">[03] Email corporativo</label>
-            <input type="email" id="cf-email" name="email" placeholder="tu@empresa.com" autocomplete="email" inputmode="email" required />
-          </div>
-          <div class="form-group">
-            <label for="cf-budget">[04] Presupuesto estimado</label>
-            <select id="cf-budget" name="budget">
-              <option value="">Selecciona una opción</option>
-              <option>Menos de $20k USD</option>
-              <option>$20k — $100k USD</option>
-              <option>$100k — $500k USD</option>
-              <option>Más de $500k USD</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label for="cf-email">[03] Email corporativo</label>
+          <input type="email" id="cf-email" name="email" placeholder="tu@empresa.com" autocomplete="email" inputmode="email" required />
         </div>
         <div class="form-group">
-          <label for="cf-msg">[05] ¿En qué podemos ayudarte?</label>
+          <label for="cf-msg">[04] ¿En qué podemos ayudarte?</label>
           <textarea id="cf-msg" name="mensaje" placeholder="Cuéntanos brevemente tu desafío o proyecto de IA..." rows="4" required></textarea>
-        </div>
-        <div class="form-check">
-          <input type="checkbox" id="cf-privacy" name="privacidad" required />
-          <label for="cf-privacy">Acepto el tratamiento de mis datos conforme al aviso de privacidad.</label>
         </div>
         <button type="submit" class="form-submit">
           <span>Enviar mensaje</span>
@@ -2331,9 +2229,6 @@ function initHero() {
     yPercent: 115, duration: 1.1, stagger: { each: 0.045 }, ease: 'power4.out'
   })
   .from('.hero-foot', { opacity: 0, y: 20, duration: 0.7 }, '-=0.5')
-  .from('.hero-stats .stat', {
-    opacity: 0, x: -10, duration: 0.5, stagger: 0.1
-  }, '-=0.5')
   .from('.hero-cta', { opacity: 0, y: 14, duration: 0.5 }, '-=0.4')
   .from('.scroll-indicator', { opacity: 0, x: -10, duration: 0.4 }, '-=0.2');
 
@@ -2475,25 +2370,6 @@ function initTestimonials() {
       }
     });
   });
-  mm.add('(max-width: 900px)', () => {
-    const track = document.getElementById('testimonialsTrack');
-    const cards = document.querySelectorAll('.testimonial-card');
-    if (track) {
-      track.style.width = '100%';
-      track.style.flexDirection = 'column';
-      cards.forEach(c => {
-        c.style.width = '100%';
-        c.style.borderRight = 'none';
-        c.style.borderBottom = '1px solid var(--line)';
-      });
-    }
-    // Al pasar a escritorio (rotar tablet, redimensionar) se revierten los estilos inline;
-    // antes se quedaban y el carrusel horizontal salía roto.
-    return () => {
-      if (track) { track.style.width = ''; track.style.flexDirection = ''; }
-      cards.forEach(c => { c.style.width = ''; c.style.borderRight = ''; c.style.borderBottom = ''; });
-    };
-  });
 }
 
 /* ──── CONTACT ──── */
@@ -2514,7 +2390,7 @@ function initContact() {
     .from('.contact-info-block', {
       opacity: 0, x: -14, duration: 0.5, stagger: 0.1
     }, '-=0.2')
-    .from('.form-group, .form-check, .form-submit', {
+    .from('.form-group, .form-submit', {
       opacity: 0, y: 12, duration: 0.4, stagger: 0.06
     }, '-=0.4');
 
@@ -2542,7 +2418,7 @@ function initContact() {
   };
   const mark = (el, ok) => {
     el.setAttribute('aria-invalid', String(!ok));
-    const wrap = el.closest('.form-group, .form-check');
+    const wrap = el.closest('.form-group');
     if (wrap) wrap.classList.toggle('is-invalid', !ok);
   };
   form.addEventListener('input', (e) => {
